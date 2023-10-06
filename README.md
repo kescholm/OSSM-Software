@@ -1,5 +1,5 @@
 # OSSM-Software
-THis is the public software in use on the OSSM
+This is the public software in use on the OSSM
 
 ## Branch Name Conventions.
 
