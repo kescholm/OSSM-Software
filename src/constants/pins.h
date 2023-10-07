@@ -63,6 +63,7 @@ namespace Pins {
   namespace Remote {
     // TODO: #OSSM-23 Documentation for these pins
     constexpr int speed_pot_pin = 34;
+
     constexpr int encoder_switch = 35;
     constexpr int encoder_a = 18;
     constexpr int encoder_b = 5;
