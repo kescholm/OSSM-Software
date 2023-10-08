@@ -1,8 +1,19 @@
-#include <gtest/gtest.h>
+#include "unity.h"
 
-TEST(SimpleTest, Addition) { EXPECT_EQ(2, 1 + 1); }
-
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+void test_dummy(void) {
+  // test stuff
+  TEST_ASSERT_EQUAL(1, 1);
 }
+
+int runUnityTests(void) {
+  UNITY_BEGIN();
+  RUN_TEST(test_dummy);
+  return UNITY_END();
+}
+
+// WARNING!!! PLEASE REMOVE UNNECESSARY MAIN IMPLEMENTATIONS //
+
+/**
+ * For native dev-platform or for some embedded frameworks
+ */
+int main(void) { return runUnityTests(); }

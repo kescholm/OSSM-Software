@@ -20,8 +20,11 @@ jobs:
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio
 
-      - name: Build and Test PlatformIO Project
-        run: pio run -e esp32dev && pio test -e native
-
       - name: Check PlatformIO Project
         run: pio check --fail-on-defect medium
+
+      - name: Build PlatformIO Project
+        run: pio run -e esp32dev
+
+      - name: Unit Test PlatformIO Project
+        run: pio test -e native
