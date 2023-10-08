@@ -1,5 +1,13 @@
+fail_fast: true
 repos:
   -   repo: https://github.com/pre-commit/mirrors-clang-format
       rev: v16.0.6  # Use the sha / tag you want to point at
       hooks:
         -   id: clang-format
+  - repo: local
+    hooks:
+      - id: pio-check
+        name: pio check
+        entry: localdev/pre-commit/pio-check.sh
+        language: script
+        pass_filenames: false
