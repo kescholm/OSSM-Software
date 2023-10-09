@@ -1,7 +1,3 @@
-//
-// Created by Andrew Koenig on 2023-10-07.
-//
-
 #ifndef OSSM_SOFTWARE_PINS_H
 #define OSSM_SOFTWARE_PINS_H
 
@@ -26,6 +22,7 @@ namespace Pins {
   constexpr int led_pin = 25;
 
   namespace Driver {
+
     // Pin that pulses on servo/stepper steps - likely labelled PUL on drivers.
     constexpr int motor_step_pin = 14;
     // Pin connected to driver/servo step direction - likely labelled DIR on
@@ -34,7 +31,7 @@ namespace Pins {
     constexpr int motor_direction_pin = 27;
     // Pin for motor enable - likely labelled ENA on drivers.
     constexpr int motor_enable_pin = 26;
-  }  // namespace Driver
+  }
 
   namespace Homing {
     // define the IO pin the emergency stop switch is connected to
@@ -43,7 +40,7 @@ namespace Pins {
     // (switches in series in normally open setup) Switches wired from IO pin to
     // ground.
     constexpr int limit_switch_pin = 12;
-  }  // namespace Homing
+  }
 
   namespace Wifi {
     // Pin for WiFi reset button (optional)
@@ -69,7 +66,7 @@ namespace Pins {
     constexpr int encoder_b = 5;
     constexpr int sda = 21;
     constexpr int click = 19;
-  }  // namespace Remote
-}  // namespace Pins
+  }
+}
 
 #endif  // OSSM_SOFTWARE_PINS_H
