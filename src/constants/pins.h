@@ -74,8 +74,8 @@ namespace Pins {
         constexpr int encoder_switch = 35;
         constexpr int encoder_a = 18;
         constexpr int encoder_b = 5;
-        constexpr int sda = 21;
-        constexpr int click = 19;
+        constexpr int display_data = 21;
+        constexpr int display_clock = 19;
     }
 }
 

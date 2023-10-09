@@ -142,3 +142,20 @@ Always review any changes made by `pre-commit` to ensure they're expected and do
 ---
 
 This revised section in your `README.md` should guide developers on multiple methods to install `pre-commit`. Ensure to adjust any placeholders or specific details to align with your project's context.
+
+## Logging
+
+In this repo we use [DebugLog](https://registry.platformio.org/libraries/hideakitai/DebugLog). This library supports log levels,
+and can be configured to output to Serial, File or both.
+
+Here's the basic usage:
+
+```cpp
+#include <DebugLog.h>
+
+LOG_ERROR("error message");
+LOG_WARN("warning message");
+LOG_INFO("info message");
+LOG_DEBUG("debug message");  // Default log level is INFO, so won't print
+LOG_TRACE("trace message");  // Same as above, won't print
+```
