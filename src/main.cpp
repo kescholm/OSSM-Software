@@ -26,7 +26,7 @@ void loop() {
     u8g2.clearBuffer();
     FastLED.clear();
 
-    appMachine.loop();
+    appMachine->loop();
 
     FastLED.show();
     u8g2.sendBuffer();
