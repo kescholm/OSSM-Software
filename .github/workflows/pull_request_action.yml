@@ -24,7 +24,7 @@ jobs:
         run: pio run -e esp32dev
 
       - name: Check PlatformIO Project
-        run: pio check --fail-on-defect medium --skip-packages -e esp32dev
+        run: pio check --skip-packages --fail-on-defect medium --fail-on-defect high -e esp32dev
 
       - name: Unit Test PlatformIO Project
         run: pio test -e native

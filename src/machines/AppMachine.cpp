@@ -4,7 +4,7 @@
 
 #include "services/display.h"
 
-AppMachine::AppMachine() { LOG_TRACE("AppMachine::AppMachine") }
+AppMachine::AppMachine() = default;
 
 void AppMachine::setup() { LOG_TRACE("AppMachine::setup") }
 
@@ -41,6 +41,7 @@ void AppMachine::updateDisplay() {
     // TODO: implement display updates for each state.
     switch (this->state) {
         default:
+            // set x,y positions as variables
             u8g2.setFont(u8g2_font_helvR08_tf);
             u8g2.setCursor(0, 40);
             u8g2.printf("State: %u not implemented.", state);

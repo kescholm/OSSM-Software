@@ -6,7 +6,7 @@
 #include "services/display.h"
 
 // Create an instance of the OSSM state machine
-AppMachine appMachine = AppMachine();
+AppMachine* appMachine;
 
 void setup() {
     LOG_TRACE("main::setup");
@@ -18,7 +18,8 @@ void setup() {
     u8g2.begin();
 
     /** App setup*/
-    appMachine.setup();
+    appMachine = new AppMachine();
+    appMachine->setup();
 };
 
 void loop() {

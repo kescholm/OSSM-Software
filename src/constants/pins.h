@@ -1,5 +1,5 @@
-#ifndef OSSM_SOFTWARE_PINS_H
-#define OSSM_SOFTWARE_PINS_H
+#ifndef OSSM_SOFTWARE_PINS_CPP
+#define OSSM_SOFTWARE_PINS_CPP
 
 /**
  * Pin definitions for the OSSM
@@ -10,7 +10,7 @@
  * To reference a pin, import this file and use the Pins namespace as follows:
  *
  * ```cpp
- * #include "constants/pins.h"
+ * #include "constants/pins.cpp"
  *
  * Pins::button_in
  * Pins::Driver::motor_step_pin
@@ -79,4 +79,4 @@ namespace Pins {
     }
 }
 
-#endif  // OSSM_SOFTWARE_PINS_H
+#endif  // OSSM_SOFTWARE_PINS_CPP
