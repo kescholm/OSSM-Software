@@ -2,11 +2,11 @@
 
 #include "Arduino.h"
 #include "FastLED.h"
-#include "machines/AppMachine.h"
+#include "machines/OSSM.h"
 #include "services/display.h"
 
 // Create an instance of the OSSM state machine
-AppMachine* appMachine;
+OSSM* ossm;
 
 void setup() {
     LOG_TRACE("main::setup");
@@ -17,16 +17,17 @@ void setup() {
     /** Service setup */
     u8g2.begin();
 
-    /** App setup*/
-    appMachine = new AppMachine();
-    appMachine->setup();
+    /** OSSM setup - this must be last.*/
+    ossm = new OSSM();
+    ossm->setup();
 };
 
 void loop() {
+    LOG_TRACE("main::loop");
     u8g2.clearBuffer();
     FastLED.clear();
 
-    appMachine->loop();
+    ossm->loop();
 
     FastLED.show();
     u8g2.sendBuffer();

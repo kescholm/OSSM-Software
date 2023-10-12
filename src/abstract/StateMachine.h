@@ -1,5 +1,5 @@
-#ifndef OSSM_SOFTWARE_MACHINE_H
-#define OSSM_SOFTWARE_MACHINE_H
+#ifndef OSSM_SOFTWARE_STATEMACHINE_H
+#define OSSM_SOFTWARE_STATEMACHINE_H
 
 // One function works for all data types.
 // This would work even for user defined types
@@ -7,7 +7,8 @@
 template <typename StateEnum, typename EventEnum>
 
 /**
- * The Machine class is an abstract class that all machines must inherit from.
+ * The StateMachine class is an abstract class that all machines must inherit
+ * from.
  *
  * To create a new machine, you'll need to inherit and override all these
  * abstract methods. If you forget to override any of these methods, the
@@ -15,7 +16,7 @@ template <typename StateEnum, typename EventEnum>
  *
  *
  */
-class Machine {
+class StateMachine {
     // The setup method is called once at the beginning of the program
     virtual void setup() = 0;
 
@@ -28,7 +29,7 @@ class Machine {
      void loop override();
 
      // YourMachine.cpp
-     void AppMachine::loop() {
+     void OSSM::loop() {
 
         childMachine.loop();
 
@@ -52,7 +53,7 @@ class Machine {
 
   public:
     // Constructor
-    Machine() = default;
+    StateMachine() = default;
 
     // Store the current event.
     EventEnum event = EventEnum::NONE;
@@ -64,4 +65,4 @@ class Machine {
     void clearEvent() { this->event = EventEnum::NONE; }
 };
 
-#endif  // OSSM_SOFTWARE_MACHINE_H
+#endif  // OSSM_SOFTWARE_STATEMACHINE_H
