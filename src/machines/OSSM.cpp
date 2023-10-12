@@ -1,26 +1,26 @@
-#include "AppMachine.h"
+#include "OSSM.h"
 
 #include <DebugLog.h>
 
 #include "services/display.h"
 
-AppMachine::AppMachine() = default;
+OSSM::OSSM() = default;
 
-void AppMachine::setup() { LOG_TRACE("AppMachine::setup") }
+void OSSM::setup() { LOG_TRACE("OSSM::setup") }
 
-void AppMachine::loop() {
-    LOG_TRACE("AppMachine::loop")
+void OSSM::loop() {
+    LOG_TRACE("OSSM::loop")
 
     this->handleEvent();
     this->updateDisplay();
 }
 
-void AppMachine::handleEvent() {
-    LOG_TRACE("AppMachine::handleEvent")
+void OSSM::handleEvent() {
+    LOG_TRACE("OSSM::handleEvent")
 
     // If there's no event to handle, then exit. This is a no-op.
-    if (this->event == App::Events::NONE) {
-        LOG_TRACE("AppMachine::handleEvent: No event to handle.")
+    if (this->event == OSSM_NS::Events::NONE) {
+        LOG_TRACE("OSSM::handleEvent: No event to handle.")
 
         return;
     }
@@ -35,12 +35,13 @@ void AppMachine::handleEvent() {
     clearEvent();
 }
 
-void AppMachine::updateDisplay() {
-    LOG_TRACE("AppMachine::updateDisplay")
+void OSSM::updateDisplay() {
+    LOG_TRACE("OSSM::updateDisplay")
 
     // TODO: implement display updates for each state.
     switch (this->state) {
         default:
+            LOG_TRACE("OSSM::updateDisplay - State: %u not implemented.", state)
             // set x,y positions as variables
             u8g2.setFont(u8g2_font_helvR08_tf);
             u8g2.setCursor(0, 40);
