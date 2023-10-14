@@ -12,7 +12,7 @@ HomePage::HomePage(OSSM *ossm) {
     this->ossm = ossm;
 }
 
-void HomePage::draw() {
+void HomePage::loop() {
     switch (state) {
         case HOME_NS::States::NONE:
             // This should intentionally fall through to the next case.

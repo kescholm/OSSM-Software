@@ -5,19 +5,21 @@
 #include "pages/home/HomePage.h"
 #include "services/display.h"
 
+/**
+ * Page definitions.
+ *
+ * Create pointers here which are initialized in the constructor.
+ */
+HomePage* homePage;
+
 OSSM::OSSM(ESP_FlexyStepper* stepper) {
     LOG_TRACE("OSSM::OSSM")
 
     this->stepper = stepper;
     this->state = OSSM_NS::States::INITIALIZING;
     this->event = OSSM_NS::Events::NONE;
-}
 
-void OSSM::loop() {
-    LOG_TRACE("OSSM::loop")
-
-    this->handleEvent();
-    this->draw();
+    homePage = new HomePage(this);
 }
 
 void OSSM::handleEvent() {
@@ -40,20 +42,19 @@ void OSSM::handleEvent() {
     clearEvent();
 }
 
-void OSSM::draw() {
-    LOG_TRACE("OSSM::draw")
+void OSSM::loop() {
+    LOG_TRACE("OSSM::loop")
 
     // TODO: implement display updates for each state.
     switch (this->state) {
         case OSSM_NS::States::NONE:
         case OSSM_NS::States::INITIALIZING:
-            static auto* homePage = new HomePage(this);
-            homePage->loop();
+            homePage->internalLoop();
             break;
         case OSSM_NS::States::HOMING:
             break;
         default:
-            LOG_TRACE("OSSM::draw - State: %u not implemented.", state)
+            LOG_TRACE("OSSM::loop - State: %u not implemented.", state)
             // set x,y positions as variables
             u8g2.setFont(u8g2_font_helvR08_tf);
             u8g2.setCursor(0, 40);

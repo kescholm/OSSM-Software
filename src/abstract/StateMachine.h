@@ -39,8 +39,8 @@ class StateMachine {
      * Transition that state if necessary, based on the current event state.
      *
      * */
-    virtual void draw() {
-        LOG_TRACE("StateMachine::draw: Using the default display handler.");
+    virtual void loop() {
+        LOG_TRACE("StateMachine::loop: Using the default display handler.");
         u8g2.setFont(u8g2_font_helvR08_tf);
         u8g2.setCursor(0, 40);
         u8g2.printf("No display handler implemented.");
@@ -56,30 +56,20 @@ class StateMachine {
     // Store the current event.
     StateEnum state = StateEnum::NONE;
 
-    /** The loop method is called repeatedly by the main thread.
-     This loop must call the loop method of any children machines.
-
-     If you don't implement this method then the default with be used. By
-     default we will handle events and update the display.
-
-     Here's an example of what a loop method might look like:
-
-     // YourMachine.h
-     void loop override();
-
-     // YourMachine.cpp
-     void OSSM::loop() {
-
-        childMachine.loop();
-
-        this->handleEvent();
-        this->draw();
-     }
+    /** The internalLoop method is called repeatedly by the main thread.
+     * In general, your custom logic should live in the "loop" method, and call
+     * "internalLoop" instead.
+     *
+     * This ensures that the "handleEvent" method is called as expected.
+     *
+     * You can, however, override the internalLoop method if you need to.
      */
-    virtual void loop() {
-        LOG_TRACE("StateMachine::handleEvent: Using the default loop handler.")
+    virtual void internalLoop() {
+        LOG_TRACE(
+            "StateMachine::internalLoop: Using the default internalLoop "
+            "handler.")
         this->handleEvent();
-        this->draw();
+        this->loop();
     }
 
     // method to clear that stored event.

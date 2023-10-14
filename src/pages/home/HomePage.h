@@ -16,7 +16,7 @@ class HomePage : public StateMachine<HOME_NS::States, HOME_NS::Events> {
   public:
     explicit HomePage(OSSM *ossm);
 
-    void draw() override;
+    void loop() override;
 };
 
 #endif  // OSSM_SOFTWARE_HOMEPAGE_H

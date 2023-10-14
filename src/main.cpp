@@ -40,11 +40,11 @@ void setup() {
 };
 
 void loop() {
-    LOG_TRACE("main::loop");
+    LOG_TRACE("main::internalLoop");
     u8g2.clearBuffer();
     FastLED.clear();
 
-    ossm->loop();
+    ossm->internalLoop();
 
     FastLED.show();
     u8g2.sendBuffer();
