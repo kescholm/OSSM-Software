@@ -69,11 +69,11 @@ namespace Pins {
         // TODO: #OSSM-23 Documentation for these pins
         constexpr int speedPotPin = 34;
 
-        constexpr int encoder_switch = 35;
-        constexpr int encoder_a = 18;
-        constexpr int encoder_b = 5;
-        constexpr int display_data = 21;
-        constexpr int display_clock = 19;
+        constexpr int encoderSwitch = 35;
+        constexpr int encoderA = 18;
+        constexpr int encoderB = 5;
+        constexpr int displayData = 21;
+        constexpr int displayClock = 19;
     }
 }
 

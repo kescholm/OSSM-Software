@@ -36,11 +36,16 @@ class StateMachine {
     };
 
     /**
-     * Transition that state if necessary, based on the current event state.
+     * This is the private loop that you should override.
+     * You custom logic should live here.
+     * If you have children machines, you should call their `loop()` methods
+     * here as well.
      *
+     * This is called by the public loop method, after handling events.
      * */
-    virtual void loop() {
-        LOG_TRACE("StateMachine::loop: Using the default display handler.");
+    virtual void loopInternal() {
+        LOG_TRACE(
+            "StateMachine::loopInternal: Using the default display handler.");
         u8g2.setFont(u8g2_font_helvR08_tf);
         u8g2.setCursor(0, 40);
         u8g2.printf("No display handler implemented.");
@@ -56,20 +61,20 @@ class StateMachine {
     // Store the current event.
     StateEnum state = StateEnum::NONE;
 
-    /** The internalLoop method is called repeatedly by the main thread.
-     * In general, your custom logic should live in the "loop" method, and call
-     * "internalLoop" instead.
+    /** The loop method is called repeatedly by the main thread.
+     * In general, your custom logic should live in the "loopInternal" method,
+     * and call "loop" instead.
      *
      * This ensures that the "handleEvent" method is called as expected.
      *
-     * You can, however, override the internalLoop method if you need to.
+     * You can, however, override the loop method if you need to.
      */
-    virtual void internalLoop() {
+    virtual void loop() {
         LOG_TRACE(
-            "StateMachine::internalLoop: Using the default internalLoop "
+            "StateMachine::internalLoop: Using the default loop "
             "handler.")
         this->handleEvent();
-        this->loop();
+        this->loopInternal();
     }
 
     // method to clear that stored event.

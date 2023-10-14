@@ -1,7 +1,3 @@
-//
-// Created by Andrew Koenig on 2023-10-13.
-//
-
 #include "HomePage.h"
 
 #include "DebugLog.h"
@@ -12,7 +8,7 @@ HomePage::HomePage(OSSM *ossm) {
     this->ossm = ossm;
 }
 
-void HomePage::loop() {
+void HomePage::loopInternal() {
     switch (state) {
         case HOME_NS::States::NONE:
             // This should intentionally fall through to the next case.

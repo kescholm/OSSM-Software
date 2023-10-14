@@ -42,19 +42,19 @@ void OSSM::handleEvent() {
     clearEvent();
 }
 
-void OSSM::loop() {
-    LOG_TRACE("OSSM::loop")
+void OSSM::loopInternal() {
+    LOG_TRACE("OSSM::loopInternal")
 
     // TODO: implement display updates for each state.
     switch (this->state) {
         case OSSM_NS::States::NONE:
         case OSSM_NS::States::INITIALIZING:
-            homePage->internalLoop();
+            homePage->loop();
             break;
         case OSSM_NS::States::HOMING:
             break;
         default:
-            LOG_TRACE("OSSM::loop - State: %u not implemented.", state)
+            LOG_TRACE("OSSM::loopInternal - State: %u not implemented.", state)
             // set x,y positions as variables
             u8g2.setFont(u8g2_font_helvR08_tf);
             u8g2.setCursor(0, 40);

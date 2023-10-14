@@ -1,7 +1,3 @@
-//
-// Created by Andrew Koenig on 2023-10-13.
-//
-
 #ifndef OSSM_SOFTWARE_HOMESTATESEVENTS_H
 #define OSSM_SOFTWARE_HOMESTATESEVENTS_H
 
