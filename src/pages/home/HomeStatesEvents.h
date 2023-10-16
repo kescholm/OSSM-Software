@@ -8,14 +8,19 @@ namespace HOME_NS {
         NONE,
 
         HOMING,
+        HOMING_REVERSE,
+        HOMING_FORWARD,
+        IDLE,
 
         // Finally, here's the size of the current state list.
-        NUM_OPTIONS
+        NUM_OPTIONS,
     };
 
     enum class Events {
         // None must always be defined as the first event type.
         NONE,
+        DONE,
+        ERROR,
 
         // Finally, here's the size of the current state list.
         NUM_OPTIONS

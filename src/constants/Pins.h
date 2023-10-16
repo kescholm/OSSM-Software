@@ -31,6 +31,7 @@ namespace Pins {
     }
 
     namespace Driver {
+        constexpr int currentSensorPin = 36;
 
         // Pin that pulses on servo/stepper steps - likely labelled PUL on
         // drivers.
@@ -44,17 +45,17 @@ namespace Pins {
 
         // define the IO pin the emergency stop switch is connected to
         constexpr int stopPin = 19;
-        // define the IO pin where the limit(homing) switch(es) are connected to
-        // (switches in series in normally open setup) Switches wired from IO
-        // pin to ground.
+        // define the IO pin where the limit(homingStart) switch(es) are
+        // connected to (switches in series in normally open setup) Switches
+        // wired from IO pin to ground.
         constexpr int limitSwitchPin = 12;
     }
 
     namespace Wifi {
         // Pin for WiFi reset button (optional)
         constexpr int resetPin = 23;
-        // Pin for the toggle for wifi control (Can be left alone if no hardware
-        // toggle is required)
+        // Pin for the toggle for wifi control (Can be target alone if no
+        // hardware toggle is required)
         constexpr int controlTogglePin = 22;
 
         // TODO: #OSSM-21 No toggle switch should be required for control. The

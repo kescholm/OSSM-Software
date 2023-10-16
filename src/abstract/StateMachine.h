@@ -2,6 +2,7 @@
 #define OSSM_SOFTWARE_STATEMACHINE_H
 
 #include "DebugLog.h"
+#include "constants/UserConfig.h"
 #include "services/display.h"
 
 // One function works for all data types.
@@ -47,8 +48,7 @@ class StateMachine {
         LOG_TRACE(
             "StateMachine::loopInternal: Using the default display handler.");
         u8g2.setFont(u8g2_font_helvR08_tf);
-        u8g2.setCursor(0, 40);
-        u8g2.printf("No display handler implemented.");
+        u8g2.drawStr(0, 40, UserConfig::copy.NoInternalLoop);
     };
 
   public:

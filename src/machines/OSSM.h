@@ -7,13 +7,14 @@
 
 class OSSM : public StateMachine<OSSM_NS::States, OSSM_NS::Events> {
     void handleEvent() override;
+    void loopInternal() override;
+    const char *errorMessage;
 
   public:
-    explicit OSSM(ESP_FlexyStepper *stepper);
+    OSSM();
 
-    void loopInternal() override;
-
-    ESP_FlexyStepper *stepper;
+    void setError(const char *message);
+    ESP_FlexyStepper stepper;
 };
 
 #endif  // OSSM_SOFTWARE_OSSM_H

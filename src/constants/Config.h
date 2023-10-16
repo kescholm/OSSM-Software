@@ -9,6 +9,10 @@
 */
 namespace Config {
 
+    namespace Limits {
+        constexpr float currentLimit = 1.5;
+    }
+
     /**
             Motion System Config
     */
@@ -37,6 +41,10 @@ namespace Config {
         // OSSM) Recommended to also subtract e.g. 20mm to keep the backstop
         // well away from the device.
         constexpr float maxStrokeLengthMm = 75.f;
+
+        // This is the measured current that use to infer when the device has
+        // reached the end of its stroke. during "Homing".
+        constexpr float sensorlessCurrentLimit = 1.5f;
     }
 
     /**
@@ -55,9 +63,9 @@ namespace Config {
 */
     namespace Advanced {
 
-        // After homing this is the physical buffer distance from the effective
-        // zero to the home switch This is to stop the home switch being smacked
-        // constantly
+        // After homingStart this is the physical buffer distance from the
+        // effective zero to the home switch This is to stop the home switch
+        // being smacked constantly
         constexpr float strokeZeroOffsetmm = 6.0f;
         // The minimum value of the pot in percent
         // prevents noisy pots registering commands when turned down to zero by
