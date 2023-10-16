@@ -5,8 +5,6 @@
 #include "services/stepper.h"
 #include "utilities/analog.h"
 
-using namespace std;
-
 HomePage::HomePage(OSSM *ossm) {
     LOG_DEBUG("HomePage::HomePage");
     this->ossm = ossm;
