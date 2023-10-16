@@ -3,7 +3,8 @@
 
 #include "services/display.h"
 
-int getUTF8CharLength(const char c) {
+// NOLINTBEGIN(hicpp-signed-bitwise)
+int getUTF8CharLength(const unsigned char c) {
     if ((c & 0x80) == 0)
         return 1;  // ASCII
     else if ((c & 0xE0) == 0xC0)
@@ -14,6 +15,7 @@ int getUTF8CharLength(const char c) {
         return 4;  // 4-byte UTF8
     return 1;      // default to 1 byte for unexpected scenarios
 }
+// NOLINTEND(hicpp-signed-bitwise)
 
 /**
  * This namespace contains functions that extend the functionality of the
