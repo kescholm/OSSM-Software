@@ -11,6 +11,6 @@ namespace UserConfig {
     //  Minimally, all we need to do is change the copy struct to the following:
     //      const CopyStruct copy = fr;
     //  or any other language.
-    const CopyStruct copy = fr;
+    const CopyStruct copy = enUs;
 }
 #endif  // OSSM_SOFTWARE_USERCONFIG_H
