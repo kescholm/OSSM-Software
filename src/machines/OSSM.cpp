@@ -21,8 +21,6 @@ OSSM::OSSM() {
     this->state = OSSM_NS::States::INITIALIZING;
     this->event = OSSM_NS::Events::NONE;
 
-    this->errorMessage = nullptr;
-
     initStepper(stepper);
 
     homePage = new HomePage(this);

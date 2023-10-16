@@ -3,17 +3,15 @@
 
 #include <esp32-hal-adc.h>
 
-#include "constants/Pins.h"
-
 // public static function to get the analog value of a pin
-static float getAnalogAveragePercent(Pins::Driver pinNumber, int samples) {
+static float getAnalogAveragePercent(int pinNumber, int samples) {
     int sum = 0;
     float average = 0;
     float percentage = 0;
 
     for (int i = 0; i < samples; i++) {
         // TODO: Possibly use fancier filters?
-        sum += analogRead((int)pinNumber);
+        sum += analogRead(pinNumber);
     }
     average = (float)sum / (float)samples;
     // TODO: Might want to add a deadband
