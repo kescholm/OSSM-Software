@@ -2,11 +2,23 @@
 #define OSSM_SOFTWARE_DISPLAY_H
 #include <U8g2lib.h>
 
-#include "constants/pins.h"
+#include "constants/Pins.h"
 
+/**
+ * Welcome to our display service.
+ *
+ * Here are some documents that might help you to start drawing with this
+ * library:
+ *
+ * https://github.com/olikraus/u8g2/wiki/u8g2reference
+ *
+ * And here's a list of all U8G2 fonts:
+ *
+ * https://github.com/olikraus/u8g2/wiki/fntlistallplain
+ */
 static U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0,
-                                                Pins::Display::oled_reset,
-                                                Pins::Remote::display_clock,
-                                                Pins::Remote::display_data);
+                                                Pins::Display::oledReset,
+                                                Pins::Remote::displayClock,
+                                                Pins::Remote::displayData);
 
 #endif  // OSSM_SOFTWARE_DISPLAY_H

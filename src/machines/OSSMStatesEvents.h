@@ -5,14 +5,14 @@
  * This file defines the states and events for the OSSM.
  *
  * States are the different modes the OSSM can be in. For example, the OSSM
- * might be in the "homing" state, or the "menu" state.
+ * might be in the "homingStart" state, or the "menu" state.
  *
  * Events are the different things that can happen to the OSSM. For example, the
- * OSSM might receive a "button press" event, or a "homing complete" event.
+ * OSSM might receive a "button press" event, or a "homingStart complete" event.
  *
  * However, the OSSM may choose to not respond to an event. For example, if the
- * OSSM is in the "homing" state, it may choose to ignore a "button press".This
- * logic is controlled in the "handleEvent" method of the OSSM.
+ * OSSM is in the "homingStart" state, it may choose to ignore a "button
+ * press".This logic is controlled in the "handleEvent" method of the OSSM.
  *
  * Note: Any child machines of the OSSM can trigger and OSSM machine event, so
  * we must keep this file out of the OSSM class. This will prevent cyclical
@@ -27,11 +27,11 @@ namespace OSSM_NS {
         // Implement your states here.
         // Just make sure you manage state transitions in "handle event".
         INITIALIZING,
-        HOMING,
         MENU,
         SIMPLE_STROKE,
         DEEPTHROAT_REPLAY,
         DEEPTHROAT_SPEED_REPLAY,
+        ERROR,
 
         // Finally, here's the size of the current state list.
         NUM_OPTIONS
@@ -42,6 +42,8 @@ namespace OSSM_NS {
         NONE,
 
         // Implement your events here.
+        ERROR,
+        RESTART,
 
         // Finally, here's the size of the current state list.
         NUM_OPTIONS
