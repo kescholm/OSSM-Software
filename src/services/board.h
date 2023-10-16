@@ -1,7 +1,3 @@
-//
-// Created by Andrew Koenig on 2023-10-15.
-//
-
 #ifndef OSSM_SOFTWARE_BOARD_H
 #define OSSM_SOFTWARE_BOARD_H
 
