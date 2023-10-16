@@ -70,14 +70,14 @@ void OSSM::loopInternal() {
             homePage->loop();
             break;
         case OSSM_NS::States::ERROR:
-            u8g2.setFont(u8g2_font_helvR08_tf);
-            u8g2.drawStr(0, 8, UserConfig::copy.Error);
+            u8g2.setFont(u8g2_font_helvR08_te);
+            u8g2.drawUTF8(0, 8, UserConfig::copy.Error);
             u8g2Str::multiLine(0, 16, this->errorMessage);
             break;
         default:
             LOG_TRACE("OSSM::loopInternal - State: %u not implemented.", state)
             // set x,y positions as variables
-            u8g2.setFont(u8g2_font_helvR08_tf);
+            u8g2.setFont(u8g2_font_helvR08_te);
             u8g2.setCursor(0, 40);
             u8g2.printf(UserConfig::copy.StateNotImplemented, state);
             break;

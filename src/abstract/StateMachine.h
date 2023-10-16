@@ -47,8 +47,8 @@ class StateMachine {
     virtual void loopInternal() {
         LOG_TRACE(
             "StateMachine::loopInternal: Using the default display handler.");
-        u8g2.setFont(u8g2_font_helvR08_tf);
-        u8g2.drawStr(0, 40, UserConfig::copy.NoInternalLoop);
+        u8g2.setFont(u8g2_font_helvR08_te);
+        u8g2.drawUTF8(0, 40, UserConfig::copy.NoInternalLoop);
     };
 
   public:

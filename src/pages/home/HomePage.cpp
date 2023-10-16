@@ -5,8 +5,6 @@
 #include "services/stepper.h"
 #include "utilities/analog.h"
 
-using namespace std;
-
 HomePage::HomePage(OSSM *ossm) {
     LOG_DEBUG("HomePage::HomePage");
     this->ossm = ossm;
@@ -66,8 +64,8 @@ void HomePage::loopInternal() {
     // convert d2 to string
     LOG_DEBUG("HomePage::HomePage state:", (int)state);
 
-    u8g2.setFont(u8g2_font_helvR08_tf);
-    u8g2.drawStr(0, 40, UserConfig::copy.Homing);
+    u8g2.setFont(u8g2_font_helvR08_te);
+    u8g2.drawUTF8(0, 40, UserConfig::copy.Homing);
     switch (state) {
         case HOME_NS::States::NONE:
             event = HOME_NS::Events::DONE;
@@ -80,8 +78,8 @@ void HomePage::loopInternal() {
             homing();
             break;
         default:
-            u8g2.setFont(u8g2_font_helvR08_tf);
-            u8g2.drawStr(0, 40, UserConfig::copy.YouShouldNotBeHere);
+            u8g2.setFont(u8g2_font_helvR08_te);
+            u8g2.drawUTF8(0, 40, UserConfig::copy.YouShouldNotBeHere);
     }
 }
 

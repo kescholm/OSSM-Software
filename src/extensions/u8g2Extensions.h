@@ -7,6 +7,18 @@
 
 #include "services/display.h"
 
+int getUTF8CharLength(const char c) {
+    if ((c & 0x80) == 0)
+        return 1;  // ASCII
+    else if ((c & 0xE0) == 0xC0)
+        return 2;  // 2-byte UTF8
+    else if ((c & 0xF0) == 0xE0)
+        return 3;  // 3-byte UTF8
+    else if ((c & 0xF8) == 0xF0)
+        return 4;  // 4-byte UTF8
+    return 1;      // default to 1 byte for unexpected scenarios
+}
+
 /**
  * This namespace contains functions that extend the functionality of the
  * U8G2 library.
@@ -17,7 +29,7 @@
 namespace u8g2Str {
     static void centered(int y, const char *str) {
         int x = (u8g2.getDisplayWidth() - u8g2.getStrWidth(str)) / 2;
-        u8g2.drawStr(x, y, str);
+        u8g2.drawUTF8(x, y, str);
     }
 
     /**
@@ -28,51 +40,49 @@ namespace u8g2Str {
      * @param y
      * @param str
      */
-    void multiLine(int x, int y, const char *str) {
-        // display width in pixels
+    void multiLine(int x, int y, const char *str, int lineHeight = 12) {
         int displayWidth = u8g2.getDisplayWidth();
-        // string width in pixels
         int stringWidth = 0;
-        char glyph[2];
-        glyph[1] = 0;
-        for (const char *ptr = str, *lastBlank = nullptr; *ptr; ++ptr) {
-            while (x == 0 && (*str == ' ' || *str == '\n'))
-                // skip blanks and newlines at the left edge of the display
+        char glyph[5] = {
+            0};  // max UTF-8 glyph length is 4 bytes + 1 for null terminator
+        for (const char *ptr = str, *lastBlank = nullptr; *ptr;) {
+            while (x == 0 && (*str == ' ' || *str == '\n')) {
                 if (ptr == str++) ++ptr;
-            glyph[0] = *ptr;
+            }
 
-            // accumulate the pixel width
+            int charLength = getUTF8CharLength(*ptr);
+            strncpy(glyph, ptr, charLength);
+            glyph[charLength] = 0;  // Ensure null-terminated
+
+            ptr += charLength;  // Move pointer by character length
+
             stringWidth += u8g2.getStrWidth(glyph);
-            // remember where the last blank was found
-            if (*ptr == ' ') lastBlank = ptr;
-
-            // non-blanks will be separated by one additional pixel
+            if (*glyph == ' ')
+                lastBlank = ptr - charLength;
             else
                 ++stringWidth;
 
-            // if we found a newline character, or if we ran past the right edge
-            // of the display
-            if (*ptr == '\n' || x + stringWidth > displayWidth) {
+            if (*glyph == '\n' || x + stringWidth > displayWidth) {
                 int starting_xloc = x;
-                // print to just before the last blank, or to just before where
-                // we got to
                 while (str < (lastBlank ? lastBlank : ptr)) {
-                    glyph[0] = *str++;
-                    x += u8g2.drawStr(x, y, glyph);
+                    charLength = getUTF8CharLength(*str);
+                    strncpy(glyph, str, charLength);
+                    glyph[charLength] = 0;  // Ensure null-terminated
+                    x += u8g2.drawUTF8(x, y, glyph);
+                    str += charLength;
                 }
-                // account for what we printed
                 stringWidth -= x - starting_xloc;
-
-                // advance to the next line
-                y += u8g2.getMaxCharHeight();
+                y += lineHeight;
                 x = 0;
                 lastBlank = nullptr;
             }
         }
-        // print any characters left over
         while (*str) {
-            glyph[0] = *str++;
-            x += u8g2.drawStr(x, y, glyph);
+            int charLength = getUTF8CharLength(*str);
+            strncpy(glyph, str, charLength);
+            glyph[charLength] = 0;  // Ensure null-terminated
+            x += u8g2.drawUTF8(x, y, glyph);
+            str += charLength;
         }
     }
 };

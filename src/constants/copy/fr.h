@@ -14,7 +14,7 @@ static const CopyStruct fr = {
     .Homing = "FR - Homing",
     .HomingSensorless = "FR - Finding Home Sensorless",
     .HomingTookTooLong =
-        "Le homing a pris trop de temps.\nVeuillez vérifier votre câblage et "
+        "Le homing a pris trop de temps.Veuillez vérifier votre câblage et "
         "réessayer.",
     .NoInternalLoop = "Aucun gestionnaire d'affichage implémenté.",
     .StateNotImplemented = "État: %u non implémenté.",
