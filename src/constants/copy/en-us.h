@@ -13,6 +13,7 @@ static const CopyStruct enUs = {
     .NoInternalLoop = "No display handler implemented.",
     .StateNotImplemented = "State: %u not implemented.",
     .YouShouldNotBeHere = "You should not be here.",
+    .Idle = "Idle",
 };
 
 #endif  // OSSM_SOFTWARE_EN_US_H

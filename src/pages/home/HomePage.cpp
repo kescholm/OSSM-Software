@@ -1,6 +1,7 @@
 #include "HomePage.h"
 
 #include "DebugLog.h"
+#include "extensions/u8g2Extensions.h"
 #include "services/display.h"
 #include "services/stepper.h"
 #include "utilities/analog.h"
@@ -64,22 +65,30 @@ void HomePage::loopInternal() {
     // convert d2 to string
     LOG_DEBUG("HomePage::HomePage state:", (int)state);
 
-    u8g2.setFont(u8g2_font_helvR08_te);
-    u8g2.drawUTF8(0, 40, UserConfig::copy.Homing);
     switch (state) {
         case HOME_NS::States::NONE:
             event = HOME_NS::Events::DONE;
             break;
         case HOME_NS::States::HOMING:
+            u8g2Str::title(UserConfig::copy.Homing);
             homingStart();
             break;
         case HOME_NS::States::HOMING_REVERSE:
         case HOME_NS::States::HOMING_FORWARD:
-            homing();
+            u8g2Str::title(UserConfig::copy.Homing);
+            // Intentionally block the main thread while homing.
+            // This ensures that we can immediately detect a "bump" current,
+            // without being worried about other processes.
+            do {
+                homing();
+            } while (event == HOME_NS::Events::NONE);
+            break;
+        case HOME_NS::States::IDLE:
+            u8g2Str::title(UserConfig::copy.Idle);
             break;
         default:
-            u8g2.setFont(u8g2_font_helvR08_te);
-            u8g2.drawUTF8(0, 40, UserConfig::copy.YouShouldNotBeHere);
+            u8g2Str::title(UserConfig::copy.Error);
+            u8g2Str::multiLine(0, 20, UserConfig::copy.YouShouldNotBeHere);
     }
 }
 
@@ -112,14 +121,14 @@ void HomePage::homing() {
     if (millis() - this->startMillis > 15000) {
         LOG_ERROR(
             "HomePage::homing, homing took too long. Check power and restart.");
+        event = HOME_NS::Events::ERROR;
         ossm->setError(UserConfig::copy.HomingTookTooLong);
         return;
     }
 
     // measure the current analog value.
-    float current =
-        getAnalogAveragePercent(Pins::Driver::currentSensorPin, 200) -
-        currentSensorOffset;
+    float current = getAnalogAveragePercent(Pins::Driver::currentSensorPin) -
+                    currentSensorOffset;
 
     // If we have not detected a "bump" with a hard stop, then return and let
     // the loops continue.

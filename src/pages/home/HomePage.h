@@ -9,9 +9,11 @@ class HomePage : public StateMachine<HOME_NS::States, HOME_NS::Events> {
     OSSM *ossm;
     float currentSensorOffset;
     float measuredStrokeMm;
+    float currentMeasurements[10];
     unsigned long startMillis;
 
     void homingStart();
+
     void homing();
 
     void handleEvent() override;

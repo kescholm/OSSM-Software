@@ -6,9 +6,9 @@
 #include "abstract/StateMachine.h"
 
 class OSSM : public StateMachine<OSSM_NS::States, OSSM_NS::Events> {
+    const char *errorMessage;
     void handleEvent() override;
     void loopInternal() override;
-    const char *errorMessage;
 
   public:
     OSSM();

@@ -4,7 +4,7 @@
 #include "services/display.h"
 
 // NOLINTBEGIN(hicpp-signed-bitwise)
-int getUTF8CharLength(const unsigned char c) {
+static int getUTF8CharLength(const unsigned char c) {
     if ((c & 0x80) == 0)
         return 1;  // ASCII
     else if ((c & 0xE0) == 0xC0)
@@ -38,7 +38,9 @@ namespace u8g2Str {
      * @param y
      * @param str
      */
-    void multiLine(int x, int y, const char *str, int lineHeight = 12) {
+    static void multiLine(int x, int y, const char *str, int lineHeight = 12) {
+        u8g2.setFont(u8g2_font_helvR08_te);
+
         int displayWidth = u8g2.getDisplayWidth();
         int stringWidth = 0;
         char glyph[5] = {
@@ -82,6 +84,11 @@ namespace u8g2Str {
             x += u8g2.drawUTF8(x, y, glyph);
             str += charLength;
         }
+    }
+
+    static void title(const char *str) {
+        u8g2.setFont(u8g2_font_helvB08_te);
+        centered(8, str);
     }
 };
 

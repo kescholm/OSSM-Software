@@ -32,6 +32,7 @@ namespace OSSM_NS {
         DEEPTHROAT_REPLAY,
         DEEPTHROAT_SPEED_REPLAY,
         ERROR,
+        RESTARTING,
 
         // Finally, here's the size of the current state list.
         NUM_OPTIONS
@@ -43,7 +44,7 @@ namespace OSSM_NS {
 
         // Implement your events here.
         ERROR,
-        RESTART,
+        ENCODER_PUSH,
 
         // Finally, here's the size of the current state list.
         NUM_OPTIONS

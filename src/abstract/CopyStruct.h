@@ -9,6 +9,7 @@ struct CopyStruct {
     const char *NoInternalLoop;
     const char *StateNotImplemented;
     const char *YouShouldNotBeHere;
+    const char *Idle;
 };
 
 #endif  // OSSM_SOFTWARE_COPYSTRUCT_H

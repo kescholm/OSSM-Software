@@ -15,6 +15,7 @@ static const CopyStruct fr = {
     .NoInternalLoop = "Aucun gestionnaire d'affichage implémenté.",
     .StateNotImplemented = "État: %u non implémenté.",
     .YouShouldNotBeHere = "Vous ne devriez pas être ici.",
+    .Idle = "Inactif",
 };
 
 #endif  // OSSM_SOFTWARE_FR_H

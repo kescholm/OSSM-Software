@@ -10,6 +10,10 @@
 // Create an instance of the OSSM state machine
 OSSM *ossm;
 
+IRAM_ATTR void encoderPushButton() {
+    ossm->event = OSSM_NS::Events::ENCODER_PUSH;
+}
+
 void setup() {
     LOG_TRACE("main::setup");
 
@@ -25,6 +29,8 @@ void setup() {
      * Note: All your services and hardware must be initialized before this.
      * */
     ossm = new OSSM();
+    attachInterrupt(digitalPinToInterrupt(Pins::Remote::encoderSwitch),
+                    encoderPushButton, RISING);
 };
 
 void loop() {

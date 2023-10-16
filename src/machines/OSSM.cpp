@@ -2,6 +2,7 @@
 
 #include <DebugLog.h>
 
+#include "components/HeaderBar.h"
 #include "constants/UserConfig.h"
 #include "extensions/u8g2Extensions.h"
 #include "pages/home/HomePage.h"
@@ -52,6 +53,11 @@ void OSSM::handleEvent() {
 
     // TODO: implement event handling.
     switch (this->state) {
+        case OSSM_NS::States::ERROR:
+            if (event == OSSM_NS::Events::ENCODER_PUSH) {
+                this->state = OSSM_NS::States::RESTARTING;
+            }
+            break;
         default:
             break;
     }
@@ -64,15 +70,18 @@ void OSSM::loopInternal() {
     LOG_TRACE("OSSM::loopInternal")
 
     // TODO: implement display updates for each state.
+    HeaderBar::loop();
     switch (this->state) {
         case OSSM_NS::States::NONE:
         case OSSM_NS::States::INITIALIZING:
             homePage->loop();
             break;
         case OSSM_NS::States::ERROR:
-            u8g2.setFont(u8g2_font_helvR08_te);
-            u8g2.drawUTF8(0, 8, UserConfig::copy.Error);
-            u8g2Str::multiLine(0, 16, this->errorMessage);
+            u8g2Str::title(UserConfig::copy.Error);
+            u8g2Str::multiLine(0, 20, this->errorMessage);
+            break;
+        case OSSM_NS::States::RESTARTING:
+            ESP.restart();
             break;
         default:
             LOG_TRACE("OSSM::loopInternal - State: %u not implemented.", state)
