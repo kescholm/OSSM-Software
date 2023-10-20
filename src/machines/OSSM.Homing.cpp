@@ -118,7 +118,7 @@ void OSSM::homing() {
     xTaskCreate(homingTask, "homingTask", 10000, this, 1, nullptr);
 }
 
-bool OSSM::isStrokeTooShort() {
+auto OSSM::isStrokeTooShort() -> bool {
     if (measuredStrokeMm > Config::Advanced::minStrokeLengthmm) {
         return false;
     }

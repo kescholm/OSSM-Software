@@ -126,8 +126,8 @@ class OSSM {
   public:
     explicit OSSM(U8G2_SSD1306_128X64_NONAME_F_HW_I2C &display);
 
-    std::unique_ptr<sml::sm<OSSMStateMachine, sml::logger<StateLogger>>>
-        sm;  // The state machine
+    std::unique_ptr<sml::sm<OSSMStateMachine, sml::logger<StateLogger>>> sm =
+        nullptr;  // The state machine
 };
 
 #endif  // OSSM_SOFTWARE_OSSM_H
