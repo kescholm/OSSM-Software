@@ -29,8 +29,8 @@ void OSSM::clearHoming() {
     this->measuredStrokeMm = 0;
 
     // Recalibrate the current sensor offset.
-    this->currentSensorOffset = (getAnalogAveragePercent(
-        SampleOnPin{Pins::Driver::currentSensorPin, 1000}));
+    this->currentSensorOffset =
+        (getAnalogAveragePercent(Pins::Driver::currentSensorPin, 1000));
 };
 
 void OSSM::homingTask(void *pvParameters) {
@@ -62,15 +62,15 @@ void OSSM::homingTask(void *pvParameters) {
         }
 
         // measure the current analog value.
-        float current = getAnalogAveragePercent(
-            SampleOnPin{Pins::Driver::currentSensorPin, 200});
-        ossm->currentSensorOffset;
+        float current =
+            getAnalogAveragePercent(Pins::Driver::currentSensorPin, 200) -
+            ossm->currentSensorOffset;
+
+        LOG_DEBUG("current: " + String(current));
 
         // If we have not detected a "bump" with a hard stop, then return and
         // let the loop continue.
         if (current < Config::Driver::sensorlessCurrentLimit) {
-            LOG_DEBUG("current:" + String(current));
-
             // Wait a millisecond to let the other tasks run.
             vTaskDelay(1);
             continue;
