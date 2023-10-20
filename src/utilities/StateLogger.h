@@ -33,7 +33,7 @@ using namespace sml;
  * -D LOG_LEVEL=LOG_LEVEL_TRACE
  *
  */
-struct OSSM_StateLogger {
+struct StateLogger {
     template <class SM, class TEvent>
     [[gnu::used]] void log_process_event(const TEvent&) {
         LOG_TRACE(String(sml::aux::get_type_name<SM>()));
