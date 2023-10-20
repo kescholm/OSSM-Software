@@ -29,8 +29,8 @@ void OSSM::clearHoming() {
     this->measuredStrokeMm = 0;
 
     // Recalibrate the current sensor offset.
-    this->currentSensorOffset =
-        (getAnalogAveragePercent(Pins::Driver::currentSensorPin, 1000));
+    this->currentSensorOffset = (getAnalogAveragePercent(
+        SampleOnPin{Pins::Driver::currentSensorPin, 1000}));
 };
 
 void OSSM::homingTask(void *pvParameters) {
@@ -69,6 +69,8 @@ void OSSM::homingTask(void *pvParameters) {
         // If we have not detected a "bump" with a hard stop, then return and
         // let the loop continue.
         if (current < Config::Driver::sensorlessCurrentLimit) {
+            LOG_DEBUG("current:" + String(current));
+
             // Wait a millisecond to let the other tasks run.
             vTaskDelay(1);
             continue;
@@ -116,12 +118,10 @@ void OSSM::homing() {
     xTaskCreate(homingTask, "homingTask", 10000, this, 1, nullptr);
 }
 
-void OSSM::emergencyStop() {
-    // Throw the e-break on the stepper
-    stepper.emergencyStop();
-
-    display.clearBuffer();
-    u8g2Str::title(UserConfig::copy.Error);
-    u8g2Str::multiLine(0, 20, UserConfig::copy.HomingTookTooLong);
-    display.sendBuffer();
+bool OSSM::isStrokeTooShort() {
+    if (measuredStrokeMm > Config::Advanced::minStrokeLengthmm) {
+        return false;
+    }
+    this->errorMessage = UserConfig::language.StrokeTooShort;
+    return true;
 }

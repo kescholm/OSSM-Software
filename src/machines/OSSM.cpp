@@ -2,6 +2,7 @@
 
 #include <DebugLog.h>
 
+#include "constants/UserConfig.h"
 #include "extensions/u8g2Extensions.h"
 #include "services/stepper.h"
 
@@ -25,6 +26,16 @@ OSSM::OSSM(U8G2_SSD1306_128X64_NONAME_F_HW_I2C &display)
 void OSSM::drawHello() {
     display.clearBuffer();
     // get the current state as a string
-    u8g2Str::title("Hello World!");
+    drawStr::title("Hello World!");
+    display.sendBuffer();
+}
+
+void OSSM::emergencyStop() {
+    // Throw the e-break on the stepper
+    stepper.emergencyStop();
+
+    display.clearBuffer();
+    drawStr::title(UserConfig::language.Error);
+    drawStr::multiLine(0, 20, errorMessage);
     display.sendBuffer();
 }

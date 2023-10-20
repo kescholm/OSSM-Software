@@ -1,11 +1,11 @@
 #ifndef OSSM_SOFTWARE_FR_H
 #define OSSM_SOFTWARE_FR_H
 
-#include "abstract/CopyStruct.h"
+#include "abstract/LanguageStruct.h"
 
 // TODO: Requires validation by a native french speaker.
 //  These have been translated by Google Translate.
-static const CopyStruct fr = {
+static const LanguageStruct fr = {
     .Error = "Erreur",
     .Homing = "FR - Homing",
     .HomingSensorless = "FR - Finding Home Sensorless",
@@ -16,6 +16,8 @@ static const CopyStruct fr = {
     .StateNotImplemented = "État: %u non implémenté.",
     .YouShouldNotBeHere = "Vous ne devriez pas être ici.",
     .Idle = "Inactif",
-};
+    .StrokeTooShort =
+        "Course trop courte. Veuillez vérifier votre courroie "
+        "d'entraînement."};
 
 #endif  // OSSM_SOFTWARE_FR_H

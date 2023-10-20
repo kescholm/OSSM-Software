@@ -13,6 +13,8 @@ namespace sml = boost::sml;
 
 class OSSM {
   private:
+    bool isStrokeTooShort();
+
     /****************************************
      ********** OSSM State Machine **********
      ****************************************
@@ -68,6 +70,9 @@ class OSSM {
                 // Wait for the homing task to finish the second pass and listen
                 // for a motor failure.
                 "homing.backward"_s + event<Error> = "error"_s,
+                "homing.backward"_s + event<Done>[([](OSSM &owner) {
+                    return owner.isStrokeTooShort();
+                })] = "error"_s,
                 "homing.backward"_s + event<Done> = "menu"_s,
 
                 // TODO: Add a menu state.
@@ -86,31 +91,43 @@ class OSSM {
         }
     };
 
-    // Using unique_ptr to manage the state machine's lifetime
-    void clearHoming();
-
-    float currentSensorOffset = 0;
-    float measuredStrokeMm = 0;
-
-    void drawHello();  // The action to be called from the state machine
-
-    void homing();
-
+    /****************************************
+     ********** Objects and Services ********
+     ****************************************
+     */
     ESP_FlexyStepper stepper;
     U8G2_SSD1306_128X64_NONAME_F_HW_I2C &display;
     StateLogger logger;
 
+    /****************************************
+     ********** Variables and Flags *********
+     ****************************************
+     */
+    float currentSensorOffset = 0;
+    float measuredStrokeMm = 0;
+    bool isForward = true;
+    String errorMessage = "";
+
+    /****************************************
+     ********** Private Functions ***********
+     ****************************************
+     */
+    void clearHoming();
+    void drawHello();
+    void homing();
     void emergencyStop();
+
+    /****************************************
+     ********** Static Functions ***********
+     ****************************************
+     */
+    static void homingTask(void *pvParameters);
 
   public:
     explicit OSSM(U8G2_SSD1306_128X64_NONAME_F_HW_I2C &display);
 
     std::unique_ptr<sml::sm<OSSMStateMachine, sml::logger<StateLogger>>>
         sm;  // The state machine
-
-    static void homingTask(void *pvParameters);
-
-    bool isForward = true;
 };
 
 #endif  // OSSM_SOFTWARE_OSSM_H

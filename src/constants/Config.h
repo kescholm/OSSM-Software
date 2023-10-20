@@ -73,6 +73,10 @@ namespace Config {
         constexpr float commandDeadzonePercentage = 1.0f;
         // affects acceleration in stepper trajectory (Aggressiveness of motion)
         constexpr float accelerationScaling = 100.0f;
+
+        // If the stroke length is less than this value, then the stroke is
+        // likely the result of a poor homing.
+        constexpr float minStrokeLengthmm = 100.0f;
     }
 
 }
