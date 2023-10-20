@@ -26,22 +26,22 @@ static int getUTF8CharLength(const unsigned char c) {
  */
 namespace u8g2Str {
     static void centered(int y, const char *str) {
-        int x = (u8g2.getDisplayWidth() - u8g2.getStrWidth(str)) / 2;
-        u8g2.drawUTF8(x, y, str);
+        int x = (display.getDisplayWidth() - display.getStrWidth(str)) / 2;
+        display.drawUTF8(x, y, str);
     }
 
     /**
      * u8g2E a string, breaking it into multiple lines if necessary.
      * This will attempt to break at "/n" characters, or at spaces if no
-     * newlines are found.
+     * newlines are handlePress.
      * @param x
      * @param y
      * @param str
      */
     static void multiLine(int x, int y, const char *str, int lineHeight = 12) {
-        u8g2.setFont(u8g2_font_helvR08_te);
+        display.setFont(u8g2_font_helvR08_te);
 
-        int displayWidth = u8g2.getDisplayWidth();
+        int displayWidth = display.getDisplayWidth();
         int stringWidth = 0;
         char glyph[5] = {
             0};  // max UTF-8 glyph length is 4 bytes + 1 for null terminator
@@ -56,7 +56,7 @@ namespace u8g2Str {
 
             ptr += charLength;  // Move pointer by character length
 
-            stringWidth += u8g2.getStrWidth(glyph);
+            stringWidth += display.getStrWidth(glyph);
             if (*glyph == ' ')
                 lastBlank = ptr - charLength;
             else
@@ -68,7 +68,7 @@ namespace u8g2Str {
                     charLength = getUTF8CharLength(*str);
                     strncpy(glyph, str, charLength);
                     glyph[charLength] = 0;  // Ensure null-terminated
-                    x += u8g2.drawUTF8(x, y, glyph);
+                    x += display.drawUTF8(x, y, glyph);
                     str += charLength;
                 }
                 stringWidth -= x - starting_xloc;
@@ -81,13 +81,13 @@ namespace u8g2Str {
             int charLength = getUTF8CharLength(*str);
             strncpy(glyph, str, charLength);
             glyph[charLength] = 0;  // Ensure null-terminated
-            x += u8g2.drawUTF8(x, y, glyph);
+            x += display.drawUTF8(x, y, glyph);
             str += charLength;
         }
     }
 
     static void title(const char *str) {
-        u8g2.setFont(u8g2_font_helvB08_te);
+        display.setFont(u8g2_font_helvB08_te);
         centered(8, str);
     }
 };

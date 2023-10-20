@@ -1,17 +1,22 @@
 #include <DebugLog.h>
 
 #include "Arduino.h"
-#include "FastLED.h"
 #include "machines/OSSM.h"
 #include "services/board.h"
 #include "services/display.h"
-#include "services/stepper.h"
 
 // Create an instance of the OSSM state machine
 OSSM *ossm;
 
-IRAM_ATTR void encoderPushButton() {
-    ossm->event = OSSM_NS::Events::ENCODER_PUSH;
+// IRAM_ATTR void encoderPushButton() {
+////    ossm->sm->process_event(ButtonPress{});
+//};
+
+bool handlePress = false;
+
+void IRAM_ATTR encoderPressed() {
+    //    LOG_DEBUG("main::encoderPushButton");
+    handlePress = true;
 }
 
 void setup() {
@@ -22,26 +27,17 @@ void setup() {
 
     /** Service setup */
     // Display
-    u8g2.begin();
-    // Stepper
+    display.begin();
 
-    /** OSSM setup - this must be last.
-     * Note: All your services and hardware must be initialized before this.
-     * */
-    ossm = new OSSM();
+    ossm = new OSSM(display);
+
     attachInterrupt(digitalPinToInterrupt(Pins::Remote::encoderSwitch),
-                    encoderPushButton, RISING);
+                    encoderPressed, RISING);
 };
 
 void loop() {
-    LOG_TRACE("main::loop");
-    u8g2.clearBuffer();
-    FastLED.clear();
-
-    // Looking for the main logic? Checkout OSSM::internalLoop() in
-    // src/machines/OSSM.cpp
-    ossm->loop();
-
-    FastLED.show();
-    u8g2.sendBuffer();
+    if (handlePress) {
+        handlePress = false;
+        ossm->sm->process_event(ButtonPress{});
+    }
 };

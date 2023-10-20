@@ -18,9 +18,9 @@ class HeaderBar {
             lastTime = millis();
         }
 
-        u8g2.setFont(u8g2_font_4x6_tf);
-        u8g2.setCursor(0, 6);
-        u8g2.print(fps);
+        display.setFont(u8g2_font_4x6_tf);
+        display.setCursor(0, 6);
+        display.print(fps);
     }
 
   public:

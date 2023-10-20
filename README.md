@@ -131,7 +131,7 @@ You can integrate this section into your `README.md`. Remember to replace placeh
 
 4. **Using `pre-commit`**:
 
-   From this point onwards, every time you run `git commit`, `pre-commit` will automatically check your changes. If there's a problem or if any files are auto-formatted, the commit will fail, and you'll receive a message detailing the changes made or issues found.
+   From this point onwards, every time you run `git commit`, `pre-commit` will automatically check your changes. If there's a problem or if any files are auto-formatted, the commit will fail, and you'll receive a message detailing the changes made or issues handlePress.
 
    If `pre-commit` auto-formats your code, you need to stage the changes with `git add` and then attempt your commit again.
 
