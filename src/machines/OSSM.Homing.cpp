@@ -29,8 +29,8 @@ void OSSM::clearHoming() {
     this->measuredStrokeMm = 0;
 
     // Recalibrate the current sensor offset.
-    this->currentSensorOffset =
-        (getAnalogAveragePercent(Pins::Driver::currentSensorPin, 1000));
+    this->currentSensorOffset = (getAnalogAveragePercent(
+        SampleOnPin{Pins::Driver::currentSensorPin, 1000}));
 };
 
 void OSSM::homingTask(void *pvParameters) {
@@ -62,9 +62,9 @@ void OSSM::homingTask(void *pvParameters) {
         }
 
         // measure the current analog value.
-        float current =
-            getAnalogAveragePercent(Pins::Driver::currentSensorPin, 200) -
-            ossm->currentSensorOffset;
+        float current = getAnalogAveragePercent(
+                            SampleOnPin{Pins::Driver::currentSensorPin, 200}) -
+                        ossm->currentSensorOffset;
 
         LOG_DEBUG("current: " + String(current));
 
