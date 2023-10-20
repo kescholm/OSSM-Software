@@ -26,12 +26,11 @@ class OSSM {
     // State transition table struct
     struct OSSMStateMachine {
         auto operator()() const {
+            // clang-format off
             return make_transition_table(
-                *"idle"_s / [](OSSM &owner) { owner.drawHello(); } =
-                    "running"_s,
-                "running"_s + event<ButtonPress> /
-                                  [](OSSM &owner) { owner.drawHello(); } =
-                    "idle"_s);
+                    *"idle"_s / [](OSSM &owner) { owner.drawHello(); } = "running"_s,
+                    "running"_s + event<ButtonPress> / [](OSSM &owner) { owner.drawHello(); } = "idle"_s);
+            // clang-format on
         }
     };
 
