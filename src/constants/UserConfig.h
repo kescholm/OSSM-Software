@@ -9,8 +9,8 @@ namespace UserConfig {
 
     // TODO: Create a simple way in the UI to change the language.
     //  Minimally, all we need to do is change the copy struct to the following:
-    //      const CopyStruct copy = fr;
+    //      const LanguageStruct copy = fr;
     //  or any other language.
-    const CopyStruct copy = enUs;
+    const LanguageStruct language = enUs;
 }
 #endif  // OSSM_SOFTWARE_USERCONFIG_H
