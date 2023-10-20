@@ -71,7 +71,7 @@ void OSSM::homingTask(void *pvParameters) {
         // If we have not detected a "bump" with a hard stop, then return and
         // let the loop continue.
         if (current < Config::Driver::sensorlessCurrentLimit) {
-            // Wait a millisecond to let the other tasks run.
+            // Saying hi to the watchdog :).
             vTaskDelay(1);
             continue;
         }

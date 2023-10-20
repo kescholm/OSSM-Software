@@ -13,8 +13,6 @@ namespace sml = boost::sml;
 
 class OSSM {
   private:
-    bool isStrokeTooShort();
-
     /****************************************
      ********** OSSM State Machine **********
      ****************************************
@@ -78,9 +76,7 @@ class OSSM {
                 // TODO: Add a menu state.
                 //  Right now the menu state is just the hello world screen, and
                 //  on button press this will go back to homing.
-                "menu"_s + event<ButtonPress> /
-                               [](OSSM &owner) { owner.drawHello(); } =
-                    "homing"_s,
+                "menu"_s + event<ButtonPress> = "homing"_s,
 
                 // You hit an error. Stop the motor and wait for the button to
                 // be pressed.
@@ -116,12 +112,14 @@ class OSSM {
     void drawHello();
     void homing();
     void emergencyStop();
+    bool isStrokeTooShort();
 
     /****************************************
      ********** Static Functions ***********
      ****************************************
      */
     static void homingTask(void *pvParameters);
+    static void drawHelloTask(void *pvParameters);
 
   public:
     explicit OSSM(U8G2_SSD1306_128X64_NONAME_F_HW_I2C &display);
