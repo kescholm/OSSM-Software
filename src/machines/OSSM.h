@@ -113,7 +113,7 @@ class OSSM {
      ****************************************
      */
     void clearHoming();
-    void drawHello();
+    static void drawHello();
     void homing();
     void emergencyStop();
 
