@@ -15,18 +15,29 @@ using namespace sml;
 OSSM::OSSM(U8G2_SSD1306_128X64_NONAME_F_HW_I2C &display)
     : sm(std::make_unique<sml::sm<OSSMStateMachine, sml::logger<StateLogger>>>(
           logger, *this)),
+      encoder(Pins::Remote::encoderA, Pins::Remote::encoderB),
       display(display) {
     LOG_TRACE("OSSM::OSSM");
 
     initStepper(stepper);
+    encoder.write(0);
 
     // All initializations are done, so start the state machine.
     sm->process_event(Done{});
 }
 
+/**
+ * This task will write the word "OSSM" to the screen
+ * then briefly show the RD logo.
+ * and then end on the Kinky Makers logo.
+ *
+ * The Kinky Makers logo will stay on the screen until the next state is ready
+ * :).
+ * @param pvParameters
+ */
 void OSSM::drawHelloTask(void *pvParameters) {
     // parse ossm from the parameters
-    auto ossm = static_cast<OSSM *>(pvParameters);
+    OSSM *ossm = (OSSM *)pvParameters;
 
     int frameIdx = 0;
     const int nFrames = 8;

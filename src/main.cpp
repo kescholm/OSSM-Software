@@ -1,6 +1,7 @@
 #include <DebugLog.h>
 
 #include "Arduino.h"
+#include "Encoder.h"
 #include "machines/OSSM.h"
 #include "services/board.h"
 #include "services/display.h"

@@ -38,7 +38,7 @@ void OSSM::homingTask(void *pvParameters) {
     TickType_t xTaskStartTime = xTaskGetTickCount();
 
     // parse parameters to get OSSM reference
-    auto ossm = static_cast<OSSM *>(pvParameters);
+    OSSM *ossm = (OSSM *)pvParameters;
 
     float target = ossm->isForward ? -400 : 400;
     ossm->stepper.setTargetPositionInMillimeters(target);
