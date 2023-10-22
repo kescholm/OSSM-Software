@@ -67,10 +67,15 @@ namespace Pins {
     /** These are configured for the OSSM Remote - which has a screen, a
      * potentiometer and an encoder which clicks*/
     namespace Remote {
-        // TODO: #OSSM-23 Documentation for these pins
+
         constexpr int speedPotPin = 34;
 
+        // This switch occurs when you press the right button in.
+        // With the current state of the code this will send out a "ButtonPress"
+        // event automatically.
         constexpr int encoderSwitch = 35;
+
+        // The rotary encoder requires at least two pins to function.
         constexpr int encoderA = 18;
         constexpr int encoderB = 5;
         constexpr int encoderPower =
