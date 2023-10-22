@@ -2,8 +2,8 @@
 
 #include <DebugLog.h>
 
+#include "Events.h"
 #include "constants/UserConfig.h"
-#include "extensions/u8g2Extensions.h"
 #include "services/stepper.h"
 #include "utilities/analog.h"
 
@@ -38,13 +38,20 @@ void OSSM::homingTask(void *pvParameters) {
     TickType_t xTaskStartTime = xTaskGetTickCount();
 
     // parse parameters to get OSSM reference
-    auto ossm = static_cast<OSSM *>(pvParameters);
+    OSSM *ossm = (OSSM *)pvParameters;
 
     float target = ossm->isForward ? -400 : 400;
     ossm->stepper.setTargetPositionInMillimeters(target);
 
     // run loop for 15second or until loop exits
     do {
+        // Destroy this task if, for some reason, the state is not as expected.
+        if (!ossm->sm->is("homing"_s) && !ossm->sm->is("homing.idle"_s) &&
+            !ossm->sm->is("homing.backward"_s)) {
+            vTaskDelete(nullptr);
+            return;
+        }
+
         TickType_t xCurrentTickCount = xTaskGetTickCount();
         // Calculate the time in ticks that the task has been running.
         TickType_t xTicksPassed = xCurrentTickCount - xTaskStartTime;
@@ -57,6 +64,7 @@ void OSSM::homingTask(void *pvParameters) {
             LOG_ERROR(
                 "HomePage::homing, homing took too long. Check power and "
                 "restart.");
+            ossm->errorMessage = UserConfig::language.HomingTookTooLong;
             ossm->sm->process_event(Error{});
             break;
         }
@@ -66,17 +74,19 @@ void OSSM::homingTask(void *pvParameters) {
                             SampleOnPin{Pins::Driver::currentSensorPin, 200}) -
                         ossm->currentSensorOffset;
 
-        LOG_DEBUG("current: " + String(current));
+        LOG_TRACE("Homing current: " + String(current));
 
         // If we have not detected a "bump" with a hard stop, then return and
         // let the loop continue.
-        if (current < Config::Driver::sensorlessCurrentLimit) {
-            // Wait a millisecond to let the other tasks run.
+        if (current < Config::Driver::sensorlessCurrentLimit &&
+            ossm->stepper.getCurrentPositionInMillimeters() <
+                2 * Config::Driver::maxStrokeLengthMm) {
+            // Saying hi to the watchdog :).
             vTaskDelay(1);
             continue;
         }
 
-        LOG_DEBUG("HOMING BUMP DETECTED");
+        LOG_DEBUG("Homing Bump Detected!");
 
         // Otherwise, if we have detected a bump, then we need to stop the
         // motor.
@@ -88,13 +98,14 @@ void OSSM::homingTask(void *pvParameters) {
         float sign = ossm->isForward ? 1.0f : -1.0f;
         ossm->stepper.moveRelativeInMillimeters(
             sign *
-            Config::Advanced::strokeZeroOffsetmm);  //"move to" is blocking
+            Config::Advanced::strokeZeroOffsetMm);  //"move to" is blocking
 
-        if (ossm->isForward) {
-            // If we are homing forward, then we need to measure the stroke
+        if (!ossm->isForward) {
+            // If we are homing backward, then we need to measure the stroke
             // length before resetting the home position.
             ossm->measuredStrokeMm =
-                abs(ossm->stepper.getCurrentPositionInMillimeters());
+                min(abs(ossm->stepper.getCurrentPositionInMillimeters()),
+                    Config::Driver::maxStrokeLengthMm);
 
             LOG_DEBUG("HomePage::homing, measuredStrokeMm: " +
                       String(ossm->measuredStrokeMm));
@@ -115,11 +126,11 @@ void OSSM::homingTask(void *pvParameters) {
 
 void OSSM::homing() {
     // Create task
-    xTaskCreate(homingTask, "homingTask", 10000, this, 1, nullptr);
+    xTaskCreate(homingTask, "homingTask", 10000, this, 1, &operationTask);
 }
 
 auto OSSM::isStrokeTooShort() -> bool {
-    if (measuredStrokeMm > Config::Advanced::minStrokeLengthmm) {
+    if (measuredStrokeMm > Config::Driver::minStrokeLengthMm) {
         return false;
     }
     this->errorMessage = UserConfig::language.StrokeTooShort;

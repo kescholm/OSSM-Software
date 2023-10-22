@@ -1,9 +1,11 @@
 #include <DebugLog.h>
 
 #include "Arduino.h"
+#include "machines/Events.h"
 #include "machines/OSSM.h"
 #include "services/board.h"
 #include "services/display.h"
+#include "services/encoder.h"
 
 /*
  *  ██████╗ ███████╗███████╗███╗   ███╗
@@ -25,11 +27,10 @@
 OSSM *ossm;
 
 bool handlePress = false;
+// Counter to detect rage clicks
+unsigned int lastPress = 0;
 
-void IRAM_ATTR encoderPressed() {
-    //    LOG_DEBUG("main::encoderPushButton");
-    handlePress = true;
-}
+void IRAM_ATTR encoderPressed() { handlePress = true; }
 
 void setup() {
     LOG_TRACE("main::setup");
@@ -38,10 +39,12 @@ void setup() {
     initBoard();
 
     /** Service setup */
+    // Encoder
+    initEncoder();
     // Display
     display.begin();
 
-    ossm = new OSSM(display);
+    ossm = new OSSM(display, encoder);
 
     attachInterrupt(digitalPinToInterrupt(Pins::Remote::encoderSwitch),
                     encoderPressed, RISING);
@@ -49,6 +52,7 @@ void setup() {
 
 void loop() {
     if (handlePress) {
+        lastPress = millis();
         handlePress = false;
         ossm->sm->process_event(ButtonPress{});
     }
