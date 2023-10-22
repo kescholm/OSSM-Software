@@ -2,8 +2,8 @@
 
 #include <DebugLog.h>
 
+#include "Events.h"
 #include "constants/UserConfig.h"
-#include "extensions/u8g2Extensions.h"
 #include "services/stepper.h"
 #include "utilities/analog.h"
 
@@ -53,10 +53,11 @@ void OSSM::homingTask(void *pvParameters) {
         // 'portTICK_PERIOD_MS' is the number of milliseconds per tick.
         uint32_t msPassed = xTicksPassed * portTICK_PERIOD_MS;
 
-        if (msPassed > 15000) {
+        if (msPassed > 10000) {
             LOG_ERROR(
                 "HomePage::homing, homing took too long. Check power and "
                 "restart.");
+            ossm->errorMessage = UserConfig::language.HomingTookTooLong;
             ossm->sm->process_event(Error{});
             break;
         }
@@ -66,7 +67,7 @@ void OSSM::homingTask(void *pvParameters) {
                             SampleOnPin{Pins::Driver::currentSensorPin, 200}) -
                         ossm->currentSensorOffset;
 
-        LOG_DEBUG("current: " + String(current));
+        LOG_TRACE("Homing current: " + String(current));
 
         // If we have not detected a "bump" with a hard stop, then return and
         // let the loop continue.
@@ -76,7 +77,7 @@ void OSSM::homingTask(void *pvParameters) {
             continue;
         }
 
-        LOG_DEBUG("HOMING BUMP DETECTED");
+        LOG_DEBUG("Homing Bump Detected!");
 
         // Otherwise, if we have detected a bump, then we need to stop the
         // motor.

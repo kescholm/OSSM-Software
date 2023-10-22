@@ -45,7 +45,7 @@ struct StateLogger {
 
     template <class SM, class TGuard, class TEvent>
     [[gnu::used]] void log_guard(const TGuard&, const TEvent&, bool result) {
-        String resultString = result ? "[OK]" : "[FAIL]";
+        String resultString = result ? "[FAIL]" : "[OK]";
         LOG_TRACE(resultString + ": " + String(sml::aux::get_type_name<SM>()));
         LOG_DEBUG(resultString + ": " +
                   String(sml::aux::get_type_name<TGuard>()) + ", " +
@@ -55,7 +55,9 @@ struct StateLogger {
     template <class SM, class TAction, class TEvent>
     [[gnu::used]] void log_action(const TAction&, const TEvent&) {
         LOG_TRACE(String(sml::aux::get_type_name<SM>()));
-        LOG_DEBUG(String(sml::aux::get_type_name<TAction>()) + ", " +
+
+        // These are trace messages because lambda functions are very verbose.
+        LOG_TRACE(String(sml::aux::get_type_name<TAction>()) + ", " +
                   String(sml::aux::get_type_name<TEvent>()));
     }
 

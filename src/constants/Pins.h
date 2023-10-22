@@ -73,8 +73,14 @@ namespace Pins {
         constexpr int encoderSwitch = 35;
         constexpr int encoderA = 18;
         constexpr int encoderB = 5;
+        constexpr int encoderPower =
+            -1; /* Put -1 of Rotary encoder Vcc is connected directly to 3,3V;
+                   else you can use declared output pin for powering rotary
+                   encoder */
+
         constexpr int displayData = 21;
         constexpr int displayClock = 19;
+        constexpr int encoderStepsPerNotch = 2;
     }
 }
 

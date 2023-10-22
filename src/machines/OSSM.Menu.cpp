@@ -1,38 +1,59 @@
 #include "OSSM.h"
 
 #include "DebugLog.h"
+#include "extensions/u8g2Extensions.h"
+#include "utilities/analog.h"
 
-enum MenuOption { Train, Settings, OPTION_3, OPTION_4, OPTION_5, NUM_OPTIONS };
-
-String menuStrings[MenuOption::NUM_OPTIONS] = {"Train", "Settings", "Option 3",
-                                               "Option 4", "Option 5"};
-
-[[noreturn]] void OSSM::drawMenuTask(void *pvParameters) {
+void OSSM::drawMenuTask(void *pvParameters) {
+    bool isFirstDraw = true;
     OSSM *ossm = (OSSM *)pvParameters;
+
+    int clicksPerRow = 3;
+
+    ossm->encoder.setBoundaries(0, clicksPerRow * (MenuOption::NUM_OPTIONS)-1,
+                                true);
+    ossm->encoder.setAcceleration(0);
+
+    ossm->menuOption =
+        (MenuOption)floor(ossm->encoder.readEncoder() / clicksPerRow);
 
     // get the encoder position
     do {
-        int position = abs(ossm->encoder.read() % 100);
+        // Destroy this task if, for some reason, the state is not as expected.
+        if (!isFirstDraw && !ossm->sm->is("menu"_s) &&
+            !ossm->sm->is("menu.idle"_s)) {
+            vTaskDelete(nullptr);
+            return;
+        }
 
-        LOG_DEBUG("Encoder Position: " + String(ossm->encoder.read()));
+        if (!isFirstDraw && !ossm->encoder.encoderChanged()) {
+            vTaskDelay(1);
+            continue;
+        }
 
-        float sizeOfItem = 100.0 / MenuOption::NUM_OPTIONS;
+        isFirstDraw = false;
 
         ossm->display.clearBuffer();
 
         // Drawing Variables.
-        int leftPadding = 28;  // Padding on the left side of the screen
+        int leftPadding = 6;  // Padding on the left side of the screen
         int fontSize = 8;
         int itemHeight = 20;   // Height of each item
         int visibleItems = 3;  // Number of items visible on the screen
 
-        auto targetIdx =
-            static_cast<MenuOption>((int)floor((float)position / sizeOfItem));
+        auto menuOption =
+            (MenuOption)floor(ossm->encoder.readEncoder() / clicksPerRow);
+        ossm->menuOption = menuOption;
 
+        drawShape::scroll(100 * ossm->encoder.readEncoder() /
+                          (clicksPerRow * MenuOption::NUM_OPTIONS - 1));
+        LOG_TRACE("Hovering Over State: " + menuStrings[menuOption]);
+
+        // Loop around to make an infinite menu.
         int lastIdx =
-            targetIdx - 1 < 0 ? MenuOption::NUM_OPTIONS - 1 : targetIdx - 1;
+            menuOption - 1 < 0 ? MenuOption::NUM_OPTIONS - 1 : menuOption - 1;
         int nextIdx =
-            targetIdx + 1 > MenuOption::NUM_OPTIONS - 1 ? 0 : targetIdx + 1;
+            menuOption + 1 > MenuOption::NUM_OPTIONS - 1 ? 0 : menuOption + 1;
 
         // Draw the previous item
         if (lastIdx >= 0) {
@@ -51,7 +72,7 @@ String menuStrings[MenuOption::NUM_OPTIONS] = {"Train", "Settings", "Option 3",
         // Draw the current item
         ossm->display.setFont(u8g2_font_helvB08_tf);
         ossm->display.drawStr(leftPadding, itemHeight * (2),
-                              menuStrings[targetIdx].c_str());
+                              menuStrings[menuOption].c_str());
 
         // Draw a rounded rectangle around the center item
         ossm->display.drawRFrame(
@@ -66,9 +87,7 @@ String menuStrings[MenuOption::NUM_OPTIONS] = {"Train", "Settings", "Option 3",
 
         ossm->display.sendBuffer();
 
-        // 100 ms
-        vTaskDelay(100 / portTICK_PERIOD_MS);
-
+        vTaskDelay(1);
     } while (true);
 
     vTaskDelete(nullptr);

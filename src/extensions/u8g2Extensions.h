@@ -155,4 +155,31 @@ namespace drawStr {
     }
 };
 
+namespace drawShape {
+    static void scroll(int position) {
+        int topMargin = 10;  // Margin at the top of the screen
+
+        int scrollbarHeight = 64 - topMargin;  // Height of the scrollbar
+        int scrollbarWidth = 3;                // Width of the scrollbar
+        int scrollbarX =
+            125;  // X position of the scrollbar (right edge of the screen)
+        int scrollbarY = (64 - scrollbarHeight + topMargin) /
+                         2;  // Y position of the scrollbar (centered)
+
+        // Draw the dotted line
+        for (int i = 0; i < scrollbarHeight; i += 4) {
+            display.drawHLine(scrollbarX + 1, scrollbarY + i, 1);
+        }
+
+        // Calculate the Y position of the rectangle based on the current
+        // position
+        int rectY =
+            scrollbarY + (scrollbarHeight - scrollbarWidth) * position / 100;
+
+        // Draw the rectangle to represent the current position
+        display.drawBox(scrollbarX, rectY, scrollbarWidth, scrollbarWidth);
+    };
+
+}
+
 #endif  // OSSM_SOFTWARE_U8G2EXTENSIONS_H

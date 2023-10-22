@@ -2,9 +2,11 @@
 
 #include <DebugLog.h>
 
+#include "Events.h"
 #include "constants/Images.h"
 #include "constants/UserConfig.h"
 #include "extensions/u8g2Extensions.h"
+#include "services/encoder.h"
 #include "services/stepper.h"
 
 namespace sml = boost::sml;
@@ -12,15 +14,15 @@ using namespace sml;
 
 // Now we can define the OSSM constructor since OSSMStateMachine::operator() is
 // fully defined
-OSSM::OSSM(U8G2_SSD1306_128X64_NONAME_F_HW_I2C &display)
+OSSM::OSSM(U8G2_SSD1306_128X64_NONAME_F_HW_I2C &display,
+           AiEsp32RotaryEncoder &encoder)
     : sm(std::make_unique<sml::sm<OSSMStateMachine, sml::logger<StateLogger>>>(
           logger, *this)),
-      encoder(Pins::Remote::encoderA, Pins::Remote::encoderB),
+      encoder(encoder),
       display(display) {
     LOG_TRACE("OSSM::OSSM");
 
     initStepper(stepper);
-    encoder.write(0);
 
     // All initializations are done, so start the state machine.
     sm->process_event(Done{});
@@ -88,6 +90,13 @@ void OSSM::drawHelloTask(void *pvParameters) {
 
     ossm->display.clearBuffer();
     drawStr::title("Kinky Makers");
+    ossm->display.drawXBMP(40, 14, 50, 50, Images::KMLogo);
+    ossm->display.sendBuffer();
+
+    vTaskDelay(1500);
+
+    ossm->display.clearBuffer();
+    drawStr::title(UserConfig::language.HomingSensorless);
     ossm->display.drawXBMP(40, 14, 50, 50, Images::KMLogo);
     ossm->display.sendBuffer();
 
