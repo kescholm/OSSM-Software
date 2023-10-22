@@ -12,8 +12,9 @@ void OSSM::drawHelp() {
     // This Version of QR Codes can handle ~61 alphanumeric characters with ECC
     // LEVEL M
 
-    uint8_t qrcodeData[qrcode_getBufferSize(
-        3)];  // NOLINT(modernize-avoid-c-arrays)
+    // NOLINTBEGIN(modernize-avoid-c-arrays)
+    uint8_t qrcodeData[qrcode_getBufferSize(3)];
+    // NOLINTEND(modernize-avoid-c-arrays)
 
     String url = "https://unbox.ossm.tech";
 
