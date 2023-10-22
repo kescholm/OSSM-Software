@@ -42,6 +42,10 @@ namespace Config {
         // well away from the device.
         constexpr float maxStrokeLengthMm = 75.f;
 
+        // If the stroke length is less than this value, then the stroke is
+        // likely the result of a poor homing.
+        constexpr float minStrokeLengthMm = 25.0f;
+
         // This is the measured current that use to infer when the device has
         // reached the end of its stroke. during "Homing".
         constexpr float sensorlessCurrentLimit = 1.5f;
@@ -59,6 +63,15 @@ namespace Config {
     }
 
     /**
+        Font Config. These must be the "f" variants of the font to support other
+       languages.
+*/
+    namespace Font {
+        static auto bold = u8g2_font_helvB08_tf;
+        static auto base = u8g2_font_helvR08_tf;
+    }
+
+    /**
         Advanced Config
 */
     namespace Advanced {
@@ -66,17 +79,15 @@ namespace Config {
         // After homingStart this is the physical buffer distance from the
         // effective zero to the home switch This is to stop the home switch
         // being smacked constantly
-        constexpr float strokeZeroOffsetmm = 6.0f;
+        constexpr float strokeZeroOffsetMm = 6.0f;
         // The minimum value of the pot in percent
         // prevents noisy pots registering commands when turned down to zero by
         // user
-        constexpr float commandDeadzonePercentage = 1.0f;
+        constexpr float commandDeadZonePercentage = 1.0f;
         // affects acceleration in stepper trajectory (Aggressiveness of motion)
+
         constexpr float accelerationScaling = 100.0f;
 
-        // If the stroke length is less than this value, then the stroke is
-        // likely the result of a poor homing.
-        constexpr float minStrokeLengthmm = 100.0f;
     }
 
 }

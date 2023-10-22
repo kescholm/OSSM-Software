@@ -9,6 +9,7 @@
 #include "U8g2lib.h"
 #include "boost/sml.hpp"
 #include "constants/Menu.h"
+#include "services/tasks.h"
 #include "utilities/StateLogger.h"
 
 namespace sml = boost::sml;

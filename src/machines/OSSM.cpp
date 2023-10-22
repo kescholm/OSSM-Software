@@ -70,10 +70,10 @@ void OSSM::drawHelloTask(void *pvParameters) {
 
         ossm->display.clearBuffer();
         ossm->display.setFont(u8g2_font_maniac_tf);
-        ossm->display.drawStr(startX, heights[0], "O");
-        ossm->display.drawStr(startX + letterSpacing, heights[1], "S");
-        ossm->display.drawStr(startX + letterSpacing * 2, heights[2], "S");
-        ossm->display.drawStr(startX + letterSpacing * 3, heights[3], "M");
+        ossm->display.drawUTF8(startX, heights[0], "O");
+        ossm->display.drawUTF8(startX + letterSpacing, heights[1], "S");
+        ossm->display.drawUTF8(startX + letterSpacing * 2, heights[2], "S");
+        ossm->display.drawUTF8(startX + letterSpacing * 3, heights[3], "M");
         ossm->display.sendBuffer();
         // Saying hi to the watchdog :).
         vTaskDelay(1);
@@ -96,7 +96,7 @@ void OSSM::drawHelloTask(void *pvParameters) {
     vTaskDelay(1500);
 
     ossm->display.clearBuffer();
-    drawStr::title(UserConfig::language.HomingSensorless);
+    drawStr::title(UserConfig::language.MeasuringStroke);
     ossm->display.drawXBMP(40, 14, 50, 50, Images::KMLogo);
     ossm->display.sendBuffer();
 
@@ -105,8 +105,12 @@ void OSSM::drawHelloTask(void *pvParameters) {
 }
 
 void OSSM::drawHello() {
+    // Use the handle to delete the task.
+    if (displayTask != nullptr) {
+        vTaskDelete(displayTask);
+    }
     // Create a task to draw the hello world screen.
-    xTaskCreate(drawHelloTask, "drawHello", 10000, this, 1, nullptr);
+    xTaskCreate(drawHelloTask, "drawHello", 10000, this, 1, &displayTask);
 }
 
 void OSSM::emergencyStop() {

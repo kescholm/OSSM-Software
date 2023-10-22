@@ -7,22 +7,23 @@
 static const LanguageStruct enUs = {
     .DeepThroatTrainerSync = "DeepThroat Sync",
     .Error = "Error",
+    .GetHelp = "Get Help",
+    .GetHelpLine1 = "On Discord,",
+    .GetHelpLine2 = "or GitHub",
     .Homing = "Homing",
-    .HomingSensorless = "Finding Home Sensorless",
     .HomingTookTooLong =
         "Homing took too long.\nPlease check your wiring and try again.",
     .Idle = "Initializing",
+    .MeasuringStroke = "Measuring Stroke",
     .NoInternalLoop = "No display handler implemented.",
     .Restart = "Restart",
     .Settings = "Settings",
     .SimplePenetration = "Simple Penetration",
+    .Skip = "Click to exit",
     .StateNotImplemented = "State: %u not implemented.",
     .StrokeEngine = "Stroke Engine",
     .StrokeTooShort = "Stroke too short. Please check you drive belt.",
     .YouShouldNotBeHere = "You should not be here.",
-    .GetHelp = "Get Help",
-    .GetHelpLine1 = "On Discord,",
-    .GetHelpLine2 = "or GitHub",
-    .Skip = "Click to exit"};
+};
 
 #endif  // OSSM_SOFTWARE_EN_US_H

@@ -3,6 +3,7 @@
 
 #include <utility>
 
+#include "constants/Config.h"
 #include "services/display.h"
 
 // NOLINTBEGIN(hicpp-signed-bitwise)
@@ -44,7 +45,7 @@ namespace drawStr {
     static void multiLine(int x, int y, String string, int lineHeight = 12) {
         const char *str = string.c_str();
         // Set the font for the text to be displayed.
-        display.setFont(u8g2_font_helvR08_te);
+        display.setFont(Config::Font::base);
 
         // Retrieve the width of the display.
         int displayWidth = display.getDisplayWidth();
@@ -150,7 +151,7 @@ namespace drawStr {
     }
 
     static void title(String str) {
-        display.setFont(u8g2_font_helvB08_te);
+        display.setFont(Config::Font::bold);
         centered(8, std::move(str));
     }
 };

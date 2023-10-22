@@ -45,6 +45,13 @@ void OSSM::homingTask(void *pvParameters) {
 
     // run loop for 15second or until loop exits
     do {
+        // Destroy this task if, for some reason, the state is not as expected.
+        if (!ossm->sm->is("homing"_s) && !ossm->sm->is("homing.idle"_s) &&
+            !ossm->sm->is("homing.backward"_s)) {
+            vTaskDelete(nullptr);
+            return;
+        }
+
         TickType_t xCurrentTickCount = xTaskGetTickCount();
         // Calculate the time in ticks that the task has been running.
         TickType_t xTicksPassed = xCurrentTickCount - xTaskStartTime;
@@ -53,7 +60,7 @@ void OSSM::homingTask(void *pvParameters) {
         // 'portTICK_PERIOD_MS' is the number of milliseconds per tick.
         uint32_t msPassed = xTicksPassed * portTICK_PERIOD_MS;
 
-        if (msPassed > 10000) {
+        if (msPassed > 15000) {
             LOG_ERROR(
                 "HomePage::homing, homing took too long. Check power and "
                 "restart.");
@@ -71,7 +78,9 @@ void OSSM::homingTask(void *pvParameters) {
 
         // If we have not detected a "bump" with a hard stop, then return and
         // let the loop continue.
-        if (current < Config::Driver::sensorlessCurrentLimit) {
+        if (current < Config::Driver::sensorlessCurrentLimit &&
+            ossm->stepper.getCurrentPositionInMillimeters() <
+                2 * Config::Driver::maxStrokeLengthMm) {
             // Saying hi to the watchdog :).
             vTaskDelay(1);
             continue;
@@ -89,13 +98,14 @@ void OSSM::homingTask(void *pvParameters) {
         float sign = ossm->isForward ? 1.0f : -1.0f;
         ossm->stepper.moveRelativeInMillimeters(
             sign *
-            Config::Advanced::strokeZeroOffsetmm);  //"move to" is blocking
+            Config::Advanced::strokeZeroOffsetMm);  //"move to" is blocking
 
-        if (ossm->isForward) {
-            // If we are homing forward, then we need to measure the stroke
+        if (!ossm->isForward) {
+            // If we are homing backward, then we need to measure the stroke
             // length before resetting the home position.
             ossm->measuredStrokeMm =
-                abs(ossm->stepper.getCurrentPositionInMillimeters());
+                min(abs(ossm->stepper.getCurrentPositionInMillimeters()),
+                    Config::Driver::maxStrokeLengthMm);
 
             LOG_DEBUG("HomePage::homing, measuredStrokeMm: " +
                       String(ossm->measuredStrokeMm));
@@ -116,11 +126,11 @@ void OSSM::homingTask(void *pvParameters) {
 
 void OSSM::homing() {
     // Create task
-    xTaskCreate(homingTask, "homingTask", 10000, this, 1, nullptr);
+    xTaskCreate(homingTask, "homingTask", 10000, this, 1, &operationTask);
 }
 
 auto OSSM::isStrokeTooShort() -> bool {
-    if (measuredStrokeMm > Config::Advanced::minStrokeLengthmm) {
+    if (measuredStrokeMm > Config::Driver::minStrokeLengthMm) {
         return false;
     }
     this->errorMessage = UserConfig::language.StrokeTooShort;

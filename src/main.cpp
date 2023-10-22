@@ -39,7 +39,6 @@ void setup() {
     initBoard();
 
     /** Service setup */
-
     // Encoder
     initEncoder();
     // Display

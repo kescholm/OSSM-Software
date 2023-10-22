@@ -1,6 +1,7 @@
 #include "OSSM.h"
 
 #include "DebugLog.h"
+#include "constants/Config.h"
 #include "extensions/u8g2Extensions.h"
 #include "utilities/analog.h"
 
@@ -55,24 +56,24 @@ void OSSM::drawMenuTask(void *pvParameters) {
         int nextIdx =
             menuOption + 1 > MenuOption::NUM_OPTIONS - 1 ? 0 : menuOption + 1;
 
+        ossm->display.setFont(Config::Font::base);
+
         // Draw the previous item
         if (lastIdx >= 0) {
-            ossm->display.setFont(u8g2_font_helvR08_tf);
-            ossm->display.drawStr(leftPadding, itemHeight * (1),
-                                  menuStrings[lastIdx].c_str());
+            ossm->display.drawUTF8(leftPadding, itemHeight * (1),
+                                   menuStrings[lastIdx].c_str());
         }
 
         // Draw the next item
         if (nextIdx < MenuOption::NUM_OPTIONS) {
-            ossm->display.setFont(u8g2_font_helvR08_tf);
-            ossm->display.drawStr(leftPadding, itemHeight * (3),
-                                  menuStrings[nextIdx].c_str());
+            ossm->display.drawUTF8(leftPadding, itemHeight * (3),
+                                   menuStrings[nextIdx].c_str());
         }
 
         // Draw the current item
-        ossm->display.setFont(u8g2_font_helvB08_tf);
-        ossm->display.drawStr(leftPadding, itemHeight * (2),
-                              menuStrings[menuOption].c_str());
+        ossm->display.setFont(Config::Font::bold);
+        ossm->display.drawUTF8(leftPadding, itemHeight * (2),
+                               menuStrings[menuOption].c_str());
 
         // Draw a rounded rectangle around the center item
         ossm->display.drawRFrame(
@@ -94,6 +95,10 @@ void OSSM::drawMenuTask(void *pvParameters) {
 }
 
 void OSSM::drawMenu() {
+    // Use the handle to delete the task.
+    if (displayTask != nullptr) {
+        vTaskDelete(displayTask);
+    }
     // start the draw menu task
-    xTaskCreate(drawMenuTask, "drawMenuTask", 2048, this, 1, nullptr);
+    xTaskCreate(drawMenuTask, "drawMenuTask", 2048, this, 1, &displayTask);
 }
