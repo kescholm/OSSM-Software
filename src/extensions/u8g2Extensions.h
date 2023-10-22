@@ -156,7 +156,7 @@ namespace drawStr {
 };
 
 namespace drawShape {
-    static void scroll(int position) {
+    static void scroll(long position) {
         int topMargin = 10;  // Margin at the top of the screen
 
         int scrollbarHeight = 64 - topMargin;  // Height of the scrollbar

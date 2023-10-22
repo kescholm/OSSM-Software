@@ -48,8 +48,8 @@ void OSSM::drawHelloTask(void *pvParameters) {
     int offsetY = 12;
 
     // Bounce the Y position from 0 to 32, up to 24 and down to 32
-    int framesY[nFrames] = {6, 12, 24, 48, 44, 42, 44, 48};
-    int heights[4] = {0, 0, 0, 0};
+    std::array framesY = {6, 12, 24, 48, 44, 42, 44, 48};
+    std::array heights = {0, 0, 0, 0};
     int letterSpacing = 20;
 
     do {
