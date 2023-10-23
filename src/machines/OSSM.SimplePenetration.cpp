@@ -4,6 +4,7 @@
 
 void OSSM::startSimplePenetrationTask(void *pvParameters) {
     OSSM *ossm = (OSSM *)pvParameters;
+    int fullStrokeCount = 0;
 
     auto isInCorrectState = [](OSSM *ossm) {
         // Add any states that you want to support here.
@@ -14,10 +15,24 @@ void OSSM::startSimplePenetrationTask(void *pvParameters) {
     while (isInCorrectState(ossm)) {
         if (ossm->stepper.getDistanceToTargetSigned() != 0) {
             vTaskDelay(5);  // wait for motion to complete and requested stroke
-                            // more than zero
+            // more than zero
             continue;
         }
         ossm->isForward = !ossm->isForward;
+
+        if (ossm->speedPercentage >
+                Config::Advanced::commandDeadZonePercentage &&
+            ossm->strokePercentage >
+                (long)Config::Advanced::commandDeadZonePercentage) {
+            fullStrokeCount++;
+            ossm->sessionStrokeCount = floor(fullStrokeCount / 2);
+        }
+
+        // This calculation assumes that at the end of every stroke you have a
+        // whole positive distance, equal to maximum target position.
+        ossm->sessionDistanceMeters +=
+            (0.002 * ((float)ossm->strokePercentage / 100.0) *
+             ossm->measuredStrokeMm);
 
         double targetPosition = ossm->isForward
                                     ? -((float)ossm->strokePercentage / 100.0) *
@@ -50,7 +65,7 @@ void OSSM::startSimplePenetrationTask(void *pvParameters) {
         //        vTaskDelay(1);
         // if (currentStrokeMm > 1)
         //        numberStrokes++;
-        //        travelledDistanceMeters += (0.002 * currentStrokeMm);
+        //        sessionDistanceMeters += (0.002 * currentStrokeMm);
         //        updateLifeStats();
     }
 

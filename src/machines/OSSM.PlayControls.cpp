@@ -3,6 +3,7 @@
 
 #include "extensions/u8g2Extensions.h"
 #include "utilities/analog.h"
+#include "utilities/format.h"
 
 void OSSM::drawPlayControlsTask(void *pvParameters) {
     // parse ossm from the parameters
@@ -78,10 +79,10 @@ void OSSM::drawPlayControlsTask(void *pvParameters) {
     int16_t padding = 4;
 
     // Line heights
-    int16_t lh1 = 22;
-    int16_t lh2 = 34;
-    int16_t lh3 = 46;
-    int16_t lh4 = 64;
+    short lh1 = 25;
+    short lh2 = 37;
+    short lh3 = 56;
+    short lh4 = 64;
 
     // record session start time rounded to the nearest second
     ossm->sessionStartTime = floor(millis() / 1000);
@@ -107,7 +108,8 @@ void OSSM::drawPlayControlsTask(void *pvParameters) {
             continue;
         }
 
-        if (ossm->speedPercentage > 1.0f) {
+        if (ossm->speedPercentage >
+            Config::Advanced::commandDeadZonePercentage) {
             ossm->stepper.setSpeedInMillimetersPerSecond(
                 Config::Driver::maxSpeedMmPerSecond * ossm->speedPercentage /
                 100.0);
@@ -121,32 +123,65 @@ void OSSM::drawPlayControlsTask(void *pvParameters) {
 
         drawStr::title(menuString);
 
-        // draw a rectangle on the left for the speed
+        /**
+         * /////////////////////////////////////////////
+         * /////////// Play Controls Left  /////////////
+         * /////////////////////////////////////////////
+         *
+         * These controls are associated with speed and time.
+         */
         x = 0;
         h = ceil(64 * speedPercentage / 100);
         ossm->display.drawBox(x, y - h, w, h);
         ossm->display.drawFrame(x, 0, w, 64);
-        String speedString = UserConfig::language.Speed + ": " +
-                             String((int)speedPercentage) + "%";
-        ossm->display.drawUTF8(x + w + padding, lh1, speedString.c_str());
+        String speedString = String((int)speedPercentage) + "%";
+        ossm->display.setFont(Config::Font::base);
+        ossm->display.drawUTF8(x + w + padding, lh1,
+                               UserConfig::language.Speed.c_str());
+        ossm->display.drawUTF8(x + w + padding, lh2, speedString.c_str());
+        ossm->display.setFont(Config::Font::small);
+        ossm->display.drawUTF8(
+            x + w + padding, lh3,
+            formatTime(currentTime - ossm->sessionStartTime).c_str());
 
-        // draw a rectangle on the right for the stroke
+        /**
+         * /////////////////////////////////////////////
+         * /////////// Play Controls Right  ////////////
+         * /////////////////////////////////////////////
+         *
+         * These controls are associated with stroke and distance
+         */
         x = 124;
         h = ceil(64 * ossm->encoder.readEncoder() / 100);
         ossm->display.drawBox(x - w, y - h, w, h);
         ossm->display.drawFrame(x - w, 0, w, 64);
-        String strokeString = UserConfig::language.Stroke + ": " +
-                              String(ossm->encoder.readEncoder()) + "%";
+
+        // The word "stroke"
+        ossm->display.setFont(Config::Font::base);
+
+        String strokeString = UserConfig::language.Stroke;
         auto stringWidth = ossm->display.getUTF8Width(strokeString.c_str());
+        ossm->display.drawUTF8(x - w - stringWidth - padding, lh1,
+                               strokeString.c_str());
+
+        // The stroke percent
+        strokeString = String(ossm->encoder.readEncoder()) + "%";
+        stringWidth = ossm->display.getUTF8Width(strokeString.c_str());
         ossm->display.drawUTF8(x - w - stringWidth - padding, lh2,
                                strokeString.c_str());
 
-        // Draw the session time.
+        // The stroke count
+        ossm->display.setFont(Config::Font::small);
+        strokeString = "# " + String(ossm->sessionStrokeCount);
+        stringWidth = ossm->display.getUTF8Width(strokeString.c_str());
+        ossm->display.drawUTF8(x - w - stringWidth - padding, lh3,
+                               strokeString.c_str());
 
-        // TODO: add labels to the session time & stroke count.
-        // TODO: Pretty format the time.
-        drawStr::centered(lh3, String(currentTime - ossm->sessionStartTime));
-        drawStr::centered(lh4, String(ossm->sessionStrokeCount));
+        // The Session travel distance
+        strokeString = formatDistance(ossm->sessionDistanceMeters);
+        stringWidth = ossm->display.getUTF8Width(strokeString.c_str());
+        ossm->display.drawUTF8(x - w - stringWidth - padding, lh4,
+                               strokeString.c_str());
 
         ossm->display.sendBuffer();
 

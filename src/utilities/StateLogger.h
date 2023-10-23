@@ -1,7 +1,7 @@
 #ifndef OSSM_SOFTWARE_STATELOGGER_H
 #define OSSM_SOFTWARE_STATELOGGER_H
 
-#include <WString.h>
+#include <Arduino.h>
 
 #include <cassert>
 

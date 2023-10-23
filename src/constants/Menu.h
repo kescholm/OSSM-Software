@@ -1,7 +1,7 @@
 #ifndef OSSM_SOFTWARE_MENU_H
 #define OSSM_SOFTWARE_MENU_H
 
-#include <WString.h>
+#include <Arduino.h>
 
 #include "constants/UserConfig.h"
 
