@@ -29,9 +29,17 @@ static int getUTF8CharLength(const unsigned char c) {
  */
 namespace drawStr {
     static void centered(int y, String str) {
-        int x =
-            (display.getDisplayWidth() - display.getStrWidth(str.c_str())) / 2;
-        display.drawUTF8(x, y, str.c_str());
+        // Convert the String object to a UTF-8 string.
+        // The c_str() function ensures we're passing a null-terminated string,
+        // which is required by getStrWidth().
+        const char *utf8Str = str.c_str();
+
+        // Calculate the X position where the text should start in order to be
+        // centered.
+        int x = (display.getDisplayWidth() - display.getUTF8Width(utf8Str)) / 2;
+
+        // Draw the string at the calculated position.
+        display.drawUTF8(x, y, utf8Str);
     }
 
     /**

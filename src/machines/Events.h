@@ -16,7 +16,9 @@ namespace sml = boost::sml;
  * There's nothing special about these events, they are just structs.
  * They just happen to be defined inside of the OSSM State Machine class.
  */
-struct ButtonPress {};
+struct ButtonPress {
+    bool isDouble = false;
+};
 
 struct Done {};
 

@@ -19,14 +19,13 @@ void OSSM::drawMenuTask(void *pvParameters) {
         (MenuOption)floor(ossm->encoder.readEncoder() / clicksPerRow);
 
     // get the encoder position
-    do {
-        // Destroy this task if, for some reason, the state is not as expected.
-        if (!isFirstDraw && !ossm->sm->is("menu"_s) &&
-            !ossm->sm->is("menu.idle"_s)) {
-            vTaskDelete(nullptr);
-            return;
-        }
 
+    auto isInCorrectState = [](OSSM *ossm) {
+        // Add any states that you want to support here.
+        return ossm->sm->is("menu"_s) || ossm->sm->is("menu.idle"_s);
+    };
+
+    while (isInCorrectState(ossm)) {
         if (!isFirstDraw && !ossm->encoder.encoderChanged()) {
             vTaskDelay(1);
             continue;
@@ -89,16 +88,16 @@ void OSSM::drawMenuTask(void *pvParameters) {
         ossm->display.sendBuffer();
 
         vTaskDelay(1);
-    } while (true);
+    };
 
     vTaskDelete(nullptr);
 }
 
 void OSSM::drawMenu() {
     // Use the handle to delete the task.
-    if (displayTask != nullptr) {
-        vTaskDelete(displayTask);
-    }
+    //    if (displayTask != nullptr) {
+    //        vTaskDelete(displayTask);
+    //    }
     // start the draw menu task
     xTaskCreate(drawMenuTask, "drawMenuTask", 2048, this, 1, &displayTask);
 }

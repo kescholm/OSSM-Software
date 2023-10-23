@@ -89,8 +89,8 @@ class OSSM {
                 //  on button press this will go back to homing.
                 "menu"_s / [](OSSM &o) { o.drawMenu(); } = "menu.idle"_s,
                 "menu.idle"_s + buttonPress[([](OSSM &o) {
-                    return o.menuOption == MenuOption::Play;
-                })] = "homing"_s,
+                    return o.menuOption == MenuOption::SimplePenetration;
+                })] = "simplePenetration"_s,
                 "menu.idle"_s + buttonPress[([](OSSM &o) {
                     return o.menuOption == MenuOption::Help;
                 })] = "help"_s,
@@ -98,10 +98,13 @@ class OSSM {
                     return o.menuOption == MenuOption::Restart;
                 })] = "restart"_s,
 
-                "play"_s / [](OSSM &o) { o.drawPlay(); } = "play.idle"_s,
-                // TODO: Change this to a long press so that you don't
-                // accidentally exit.
-                "play.idle"_s + event<ButtonPress> = "menu"_s,
+                "simplePenetration"_s / [](OSSM &o) { o.drawPlayControls(); } =
+                    "simplePenetration.preflight"_s,
+                "simplePenetration.preflight"_s + done =
+                    "simplePenetration.idle"_s,
+                "simplePenetration.idle"_s +
+                    event<ButtonPress>[([](auto e) { return e.isDouble; })] /
+                        [](OSSM &o) { o.stepper.emergencyStop(); } = "menu"_s,
 
                 "help"_s / [](OSSM &o) { o.drawHelp(); } = "help.idle"_s,
                 // TODO: Change this to a long press so that you don't
@@ -111,7 +114,7 @@ class OSSM {
                 // You hit an error. Stop the motor and wait for the button to
                 // be pressed. on Click, show the help screen. And then on
                 // second click, restart the machine.
-                "error"_s / [](OSSM &o) { o.emergencyStop(); } = "error.idle"_s,
+                "error"_s / [](OSSM &o) { o.drawError(); } = "error.idle"_s,
                 "error.idle"_s +
                     event<ButtonPress> / [](OSSM &o) { o.drawHelp(); } =
                     "error.help"_s,
@@ -145,7 +148,7 @@ class OSSM {
     float measuredStrokeMm = 0;
     bool isForward = true;
     String errorMessage = "";
-    MenuOption menuOption = MenuOption::Play;
+    MenuOption menuOption = MenuOption::SimplePenetration;
 
     /**
      * ///////////////////////////////////////////
@@ -160,7 +163,7 @@ class OSSM {
 
     bool isStrokeTooShort();
 
-    void emergencyStop();
+    void drawError();
 
     void drawHello();
 
@@ -168,7 +171,7 @@ class OSSM {
 
     void drawMenu();
 
-    void drawPlay();
+    void drawPlayControls();
 
     /**
      * ///////////////////////////////////////////
@@ -182,6 +185,8 @@ class OSSM {
     static void drawHelloTask(void *pvParameters);
 
     static void drawMenuTask(void *pvParameters);
+
+    static void drawPlayControlsTask(void *pvParameters);
 
   public:
     explicit OSSM(U8G2_SSD1306_128X64_NONAME_F_HW_I2C &display,

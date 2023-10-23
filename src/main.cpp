@@ -26,9 +26,11 @@
 
 OSSM *ossm;
 
+// TODO: Move this to a service
 bool handlePress = false;
-// Counter to detect rage clicks
-unsigned int lastPress = 0;
+int counter = 0;
+bool isDouble = false;
+long lastPressed = 0;
 
 void IRAM_ATTR encoderPressed() { handlePress = true; }
 
@@ -51,9 +53,20 @@ void setup() {
 };
 
 void loop() {
+    // TODO: Relocate this code.
     if (handlePress) {
-        lastPress = millis();
         handlePress = false;
-        ossm->sm->process_event(ButtonPress{});
+
+        // detect if a double click occurred
+        if (millis() - lastPressed < 300) {
+            isDouble = true;
+        } else {
+            isDouble = false;
+        }
+        lastPressed = millis();
+
+        LOG_DEBUG("BUTTON PRESS, but was it double? ENCODER ", isDouble);
+
+        ossm->sm->process_event(ButtonPress{.isDouble = isDouble});
     }
 };

@@ -5,7 +5,14 @@
 
 #include "constants/UserConfig.h"
 
-enum MenuOption { Play, StrokeEngine, DTTSync, Help, Restart, NUM_OPTIONS };
+enum MenuOption {
+    SimplePenetration,
+    StrokeEngine,
+    DTTSync,
+    Help,
+    Restart,
+    NUM_OPTIONS
+};
 
 static String menuStrings[MenuOption::NUM_OPTIONS] = {
     UserConfig::language.SimplePenetration, UserConfig::language.StrokeEngine,
