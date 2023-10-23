@@ -33,8 +33,8 @@ void OSSM::clearHoming() {
         SampleOnPin{Pins::Driver::currentSensorPin, 1000}));
 };
 
-void OSSM::homingTask(void *pvParameters) {
-    LOG_TRACE("OSSM::homingTask :D");
+void OSSM::startHomingTask(void *pvParameters) {
+    LOG_TRACE("OSSM::startHomingTask :D");
     TickType_t xTaskStartTime = xTaskGetTickCount();
 
     // parse parameters to get OSSM reference
@@ -122,9 +122,10 @@ void OSSM::homingTask(void *pvParameters) {
     vTaskDelete(nullptr);
 }
 
-void OSSM::homing() {
+void OSSM::startHoming() {
     // Create task
-    xTaskCreate(homingTask, "homingTask", 10000, this, 1, &operationTask);
+    xTaskCreate(startHomingTask, "startHomingTask", 10000, this, 1,
+                &operationTask);
 }
 
 auto OSSM::isStrokeTooShort() -> bool {

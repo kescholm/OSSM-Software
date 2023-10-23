@@ -63,7 +63,7 @@ class OSSM {
                 "homing"_s /
                     [](OSSM &o) {
                         o.clearHoming();
-                        o.homing();
+                        o.startHoming();
                     } = "homing.idle"_s,
 
                 // Wait for the homing task to finish the first pass and listen
@@ -72,7 +72,7 @@ class OSSM {
                 "homing.idle"_s + done /
                                       [](OSSM &o) {
                                           o.isForward = false;
-                                          o.homing();
+                                          o.startHoming();
                                       } = "homing.backward"_s,
 
                 // Start the second pass of homing.
@@ -100,7 +100,8 @@ class OSSM {
 
                 "simplePenetration"_s / [](OSSM &o) { o.drawPlayControls(); } =
                     "simplePenetration.preflight"_s,
-                "simplePenetration.preflight"_s + done =
+                "simplePenetration.preflight"_s +
+                    done / [](OSSM &o) { o.startSimplePenetration(); } =
                     "simplePenetration.idle"_s,
                 "simplePenetration.idle"_s +
                     event<ButtonPress>[([](auto e) { return e.isDouble; })] /
@@ -144,11 +145,22 @@ class OSSM {
      * ////
      * ///////////////////////////////////////////
      */
+    // Calibration Variables
     float currentSensorOffset = 0;
     float measuredStrokeMm = 0;
+
+    // Homing Variables
     bool isForward = true;
-    String errorMessage = "";
+
     MenuOption menuOption = MenuOption::SimplePenetration;
+    String errorMessage = "";
+
+    // Session Variables
+    float speedPercentage = 0;
+    long strokePercentage = 0;
+
+    unsigned long sessionStartTime = 0;
+    int sessionStrokeCount = 0;
 
     /**
      * ///////////////////////////////////////////
@@ -159,7 +171,9 @@ class OSSM {
      */
     void clearHoming();
 
-    void homing();
+    void startHoming();
+
+    void startSimplePenetration();
 
     bool isStrokeTooShort();
 
@@ -180,13 +194,15 @@ class OSSM {
      * ////
      * ///////////////////////////////////////////
      */
-    static void homingTask(void *pvParameters);
+    static void startHomingTask(void *pvParameters);
 
     static void drawHelloTask(void *pvParameters);
 
     static void drawMenuTask(void *pvParameters);
 
     static void drawPlayControlsTask(void *pvParameters);
+
+    static void startSimplePenetrationTask(void *pvParameters);
 
   public:
     explicit OSSM(U8G2_SSD1306_128X64_NONAME_F_HW_I2C &display,
