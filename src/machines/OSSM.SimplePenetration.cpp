@@ -34,10 +34,12 @@ void OSSM::startSimplePenetrationTask(void *pvParameters) {
             (0.002 * ((float)ossm->strokePercentage / 100.0) *
              ossm->measuredStrokeMm);
 
-        double targetPosition = ossm->isForward
-                                    ? -((float)ossm->strokePercentage / 100.0) *
-                                          ossm->measuredStrokeMm
-                                    : 0;
+        double targetPosition =
+            ossm->isForward ? -abs(((float)ossm->strokePercentage / 100.0) *
+                                   ossm->measuredStrokeMm)
+                            : 0;
+
+        LOG_DEBUG("TARGET: ", targetPosition);
         LOG_TRACE("Moving stepper to position ",
                   static_cast<long int>(targetPosition));
 
@@ -68,11 +70,11 @@ void OSSM::startSimplePenetrationTask(void *pvParameters) {
         //        sessionDistanceMeters += (0.002 * currentStrokeMm);
         //        updateLifeStats();
     }
-
     vTaskDelete(nullptr);
 }
 
 void OSSM::startSimplePenetration() {
-    xTaskCreate(startSimplePenetrationTask, "startSimplePenetrationTask", 2048,
-                this, 1, &operationTask);
+    xTaskCreatePinnedToCore(startSimplePenetrationTask,
+                            "startSimplePenetrationTask", 2048, this, 1,
+                            &operationTask, 0);
 }

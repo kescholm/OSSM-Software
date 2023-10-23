@@ -16,6 +16,11 @@ void OSSM::drawPlayControlsTask(void *pvParameters) {
     ossm->speedPercentage = 0;
     ossm->strokePercentage = 0;
 
+    // Set the stepper to the home position
+    ossm->stepper.setAccelerationInMillimetersPerSecondPerSecond(1000);
+    ossm->stepper.setAccelerationInMillimetersPerSecondPerSecond(10000);
+    ossm->stepper.setTargetPositionInMillimeters(0);
+
     /**
      * /////////////////////////////////////////////
      * //// Safely Block High Speeds on Startup ///
@@ -86,6 +91,8 @@ void OSSM::drawPlayControlsTask(void *pvParameters) {
 
     // record session start time rounded to the nearest second
     ossm->sessionStartTime = floor(millis() / 1000);
+    ossm->sessionStrokeCount = 0;
+    ossm->sessionDistanceMeters = 0;
 
     bool valueChanged = false;
 

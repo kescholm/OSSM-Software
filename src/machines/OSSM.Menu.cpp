@@ -11,12 +11,13 @@ void OSSM::drawMenuTask(void *pvParameters) {
 
     int clicksPerRow = 3;
 
-    ossm->encoder.setBoundaries(0, clicksPerRow * (MenuOption::NUM_OPTIONS)-1,
-                                true);
+    ossm->encoder.setBoundaries(0, clicksPerRow * (Menu::NUM_OPTIONS)-1, true);
     ossm->encoder.setAcceleration(0);
 
-    ossm->menuOption =
-        (MenuOption)floor(ossm->encoder.readEncoder() / clicksPerRow);
+    ossm->menuOption = (Menu)floor(ossm->encoder.readEncoder() / clicksPerRow);
+
+    ossm->encoder.setAcceleration(0);
+    ossm->encoder.setEncoderValue(0);
 
     // get the encoder position
 
@@ -42,18 +43,18 @@ void OSSM::drawMenuTask(void *pvParameters) {
         int visibleItems = 3;  // Number of items visible on the screen
 
         auto menuOption =
-            (MenuOption)floor(ossm->encoder.readEncoder() / clicksPerRow);
+            (Menu)floor(ossm->encoder.readEncoder() / clicksPerRow);
         ossm->menuOption = menuOption;
 
         drawShape::scroll(100 * ossm->encoder.readEncoder() /
-                          (clicksPerRow * MenuOption::NUM_OPTIONS - 1));
+                          (clicksPerRow * Menu::NUM_OPTIONS - 1));
         LOG_TRACE("Hovering Over State: " + menuStrings[menuOption]);
 
         // Loop around to make an infinite menu.
         int lastIdx =
-            menuOption - 1 < 0 ? MenuOption::NUM_OPTIONS - 1 : menuOption - 1;
+            menuOption - 1 < 0 ? Menu::NUM_OPTIONS - 1 : menuOption - 1;
         int nextIdx =
-            menuOption + 1 > MenuOption::NUM_OPTIONS - 1 ? 0 : menuOption + 1;
+            menuOption + 1 > Menu::NUM_OPTIONS - 1 ? 0 : menuOption + 1;
 
         ossm->display.setFont(Config::Font::base);
 
@@ -64,7 +65,7 @@ void OSSM::drawMenuTask(void *pvParameters) {
         }
 
         // Draw the next item
-        if (nextIdx < MenuOption::NUM_OPTIONS) {
+        if (nextIdx < Menu::NUM_OPTIONS) {
             ossm->display.drawUTF8(leftPadding, itemHeight * (3),
                                    menuStrings[nextIdx].c_str());
         }

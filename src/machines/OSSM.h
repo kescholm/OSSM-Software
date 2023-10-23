@@ -6,6 +6,7 @@
 #include "AiEsp32RotaryEncoder.h"
 #include "ESP_FlexyStepper.h"
 #include "Events.h"
+#include "Guards.h"
 #include "U8g2lib.h"
 #include "boost/sml.hpp"
 #include "constants/Menu.h"
@@ -53,76 +54,71 @@ class OSSM {
             static auto done = sml::event<Done>;
             static auto error = sml::event<Error>;
 
+            // Action definitions to make the table easier to read.
+            auto drawHello = [](OSSM &o) { o.drawHello(); };
+
+            auto drawMenu = [](OSSM &o) { o.drawMenu(); };
+
+            auto startHoming = [](OSSM &o) {
+                o.clearHoming();
+                o.startHoming();
+            };
+            auto reverseHoming = [](OSSM &o) {
+                o.isForward = false;
+                o.startHoming();
+            };
+
+            auto drawPlayControls = [](OSSM &o) { o.drawPlayControls(); };
+
+            auto startSimplePenetration = [](OSSM &o) {
+                o.startSimplePenetration();
+            };
+
+            auto emergencyStop = [](OSSM &o) { o.stepper.emergencyStop(); };
+
+            auto drawHelp = [](OSSM &o) { o.drawHelp(); };
+            auto drawError = [](OSSM &o) { o.drawError(); };
+
+            auto restart = [] { ESP.restart(); };
+
+            // Guard definitions to make the table easier to read.
+            auto isStrokeTooShort = [](OSSM &o) {
+                return o.isStrokeTooShort();
+            };
+            auto isOption = [](Menu option) {
+                return [option](OSSM &o) { return o.menuOption == option; };
+            };
+
             using namespace sml;
             return make_transition_table(
-                // The initial state is "idle"
+                // clang-format off
+                *"idle"_s + done / drawHello = "homing"_s,
 
-                *"idle"_s + done / [](OSSM &o) { o.drawHello(); } = "homing"_s,
-
-                // Start Homing
-                "homing"_s /
-                    [](OSSM &o) {
-                        o.clearHoming();
-                        o.startHoming();
-                    } = "homing.idle"_s,
-
-                // Wait for the homing task to finish the first pass and listen
-                // for a motor failure.
+                "homing"_s / startHoming = "homing.idle"_s,
                 "homing.idle"_s + error = "error"_s,
-                "homing.idle"_s + done /
-                                      [](OSSM &o) {
-                                          o.isForward = false;
-                                          o.startHoming();
-                                      } = "homing.backward"_s,
-
-                // Start the second pass of homing.
-                // Wait for the homing task to finish the second pass and listen
-                // for a motor failure.
+                "homing.idle"_s + done / reverseHoming = "homing.backward"_s,
                 "homing.backward"_s + error = "error"_s,
-                "homing.backward"_s +
-                    done[([](OSSM &o) { return o.isStrokeTooShort(); })] =
-                    "error"_s,
+                "homing.backward"_s + done[(isStrokeTooShort)] = "error"_s,
                 "homing.backward"_s + done = "menu"_s,
 
-                // TODO: Add a menu state.
-                //  Right now the menu state is just the hello world screen, and
-                //  on button press this will go back to homing.
-                "menu"_s / [](OSSM &o) { o.drawMenu(); } = "menu.idle"_s,
-                "menu.idle"_s + buttonPress[([](OSSM &o) {
-                    return o.menuOption == MenuOption::SimplePenetration;
-                })] = "simplePenetration"_s,
-                "menu.idle"_s + buttonPress[([](OSSM &o) {
-                    return o.menuOption == MenuOption::Help;
-                })] = "help"_s,
-                "menu.idle"_s + buttonPress[([](OSSM &o) {
-                    return o.menuOption == MenuOption::Restart;
-                })] = "restart"_s,
+                "menu"_s / drawMenu = "menu.idle"_s,
+                "menu.idle"_s + buttonPress[(isOption(Menu::SimplePenetration))] = "simplePenetration"_s,
+                "menu.idle"_s + buttonPress[isOption(Menu::Help)] = "help"_s,
+                "menu.idle"_s + buttonPress[(isOption(Menu::Restart))] = "restart"_s,
 
-                "simplePenetration"_s / [](OSSM &o) { o.drawPlayControls(); } =
-                    "simplePenetration.preflight"_s,
-                "simplePenetration.preflight"_s +
-                    done / [](OSSM &o) { o.startSimplePenetration(); } =
-                    "simplePenetration.idle"_s,
-                "simplePenetration.idle"_s +
-                    event<ButtonPress>[([](auto e) { return e.isDouble; })] /
-                        [](OSSM &o) { o.stepper.emergencyStop(); } = "menu"_s,
+                "simplePenetration"_s / drawPlayControls = "simplePenetration.preflight"_s,
+                "simplePenetration.preflight"_s + done / startSimplePenetration = "simplePenetration.idle"_s,
+                "simplePenetration.idle"_s + event<ButtonPress>[(isDoubleClick)] / emergencyStop = "menu"_s,
 
-                "help"_s / [](OSSM &o) { o.drawHelp(); } = "help.idle"_s,
-                // TODO: Change this to a long press so that you don't
-                // accidentally exit.
+                "help"_s / drawHelp = "help.idle"_s,
                 "help.idle"_s + event<ButtonPress> = "menu"_s,
 
-                // You hit an error. Stop the motor and wait for the button to
-                // be pressed. on Click, show the help screen. And then on
-                // second click, restart the machine.
-                "error"_s / [](OSSM &o) { o.drawError(); } = "error.idle"_s,
-                "error.idle"_s +
-                    event<ButtonPress> / [](OSSM &o) { o.drawHelp(); } =
-                    "error.help"_s,
-                "error.help"_s + event<ButtonPress> / [] { ESP.restart(); } = X,
+                "error"_s / drawError = "error.idle"_s,
+                "error.idle"_s + event<ButtonPress> / drawHelp = "error.help"_s,
+                "error.help"_s + event<ButtonPress> / restart = X,
 
-                // Restart the machine, instantly.
-                "restart"_s / [] { ESP.restart(); } = X);
+                "restart"_s / restart = X);
+            // clang-format on
         }
     };
 
@@ -152,7 +148,7 @@ class OSSM {
     // Homing Variables
     bool isForward = true;
 
-    MenuOption menuOption = MenuOption::SimplePenetration;
+    Menu menuOption = Menu::SimplePenetration;
     String errorMessage = "";
 
     // Session Variables
