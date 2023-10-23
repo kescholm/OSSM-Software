@@ -69,4 +69,9 @@ void loop() {
 
         ossm->sm->process_event(ButtonPress{.isDouble = isDouble});
     }
+
+    // Print the status of the operationTask handler from FREERTOS
+    if (operationTask != nullptr) {
+        LOG_DEBUG("operationTask: " + String(eTaskGetState(operationTask)));
+    }
 };

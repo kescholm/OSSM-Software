@@ -115,16 +115,6 @@ void OSSM::drawPlayControlsTask(void *pvParameters) {
             continue;
         }
 
-        if (ossm->speedPercentage >
-            Config::Advanced::commandDeadZonePercentage) {
-            ossm->stepper.setSpeedInMillimetersPerSecond(
-                Config::Driver::maxSpeedMmPerSecond * ossm->speedPercentage /
-                100.0);
-            ossm->stepper.setAccelerationInMillimetersPerSecondPerSecond(
-                Config::Driver::maxSpeedMmPerSecond * ossm->speedPercentage *
-                ossm->speedPercentage / Config::Advanced::accelerationScaling);
-        }
-
         ossm->display.clearBuffer();
         ossm->display.setFont(Config::Font::base);
 
@@ -193,7 +183,7 @@ void OSSM::drawPlayControlsTask(void *pvParameters) {
         ossm->display.sendBuffer();
 
         // Saying hi to the watchdog :).
-        vTaskDelay(100);
+        vTaskDelay(200);
     }
 
     // Clean up!
@@ -203,6 +193,6 @@ void OSSM::drawPlayControlsTask(void *pvParameters) {
 }
 
 void OSSM::drawPlayControls() {
-    xTaskCreate(drawPlayControlsTask, "drawPlayControlsTask", 2048, this, 1,
-                &displayTask);
+    xTaskCreatePinnedToCore(drawPlayControlsTask, "drawPlayControlsTask", 2048,
+                            this, 1, &displayTask, 0);
 }

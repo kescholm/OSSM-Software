@@ -12,12 +12,37 @@ void OSSM::startSimplePenetrationTask(void *pvParameters) {
                ossm->sm->is("simplePenetration.idle"_s);
     };
 
+    double lastSpeed = 0;
+
     while (isInCorrectState(ossm)) {
         if (ossm->stepper.getDistanceToTargetSigned() != 0) {
-            vTaskDelay(5);  // wait for motion to complete and requested stroke
+            vTaskDelay(1);
             // more than zero
             continue;
         }
+
+        auto speed =
+            Config::Driver::maxSpeedMmPerSecond * ossm->speedPercentage / 100.0;
+        auto acceleration = Config::Driver::maxSpeedMmPerSecond *
+                            ossm->speedPercentage * ossm->speedPercentage /
+                            Config::Advanced::accelerationScaling;
+
+        // If the speed is greater than the deadzone, and the speed has changed
+        // by more than the deadzone, then update the stepper.
+        // This must be done in the same task that the stepper is running in.
+        if (ossm->speedPercentage >
+                Config::Advanced::commandDeadZonePercentage &&
+            abs(speed - lastSpeed) >
+                Config::Advanced::commandDeadZonePercentage) {
+            lastSpeed = speed;
+
+            ossm->stepper.setSpeedInMillimetersPerSecond(speed);
+            ossm->stepper.setAccelerationInMillimetersPerSecondPerSecond(
+                acceleration);
+            ossm->stepper.setDecelerationInMillimetersPerSecondPerSecond(
+                acceleration);
+        }
+
         ossm->isForward = !ossm->isForward;
 
         if (ossm->speedPercentage >
@@ -39,42 +64,25 @@ void OSSM::startSimplePenetrationTask(void *pvParameters) {
                                    ossm->measuredStrokeMm)
                             : 0;
 
-        LOG_DEBUG("TARGET: ", targetPosition);
+        if (ossm->speedPercentage <
+            Config::Advanced::commandDeadZonePercentage) {
+            targetPosition = 0;
+        }
+
         LOG_TRACE("Moving stepper to position ",
                   static_cast<long int>(targetPosition));
 
-        ossm->stepper.setDecelerationInMillimetersPerSecondPerSecond(
-            Config::Driver::maxSpeedMmPerSecond * ossm->speedPercentage *
-            ossm->speedPercentage / Config::Advanced::accelerationScaling);
-        vTaskDelay(1);
         ossm->stepper.setTargetPositionInMillimeters(targetPosition);
-        vTaskDelay(1);
 
-        //
-        //        while ((ossm->stepper.getDistanceToTargetSigned() != 0))
-        //        {
-        //            vTaskDelay(5); // wait for motion to complete, since we
-        //            are going back to
-        //            // zero, don't care about stroke value
-        //        }
-        //        targetPosition = 0;
-        //        // Serial.printf("Moving stepper to position %ld \n",
-        //        targetPosition); vTaskDelay(1);
-        //        stepper.setDecelerationInMillimetersPerSecondPerSecond(maxSpeedMmPerSecond
-        //        * speedPercentage * speedPercentage /
-        //                                                               accelerationScaling);
-        //        stepper.setTargetPositionInMillimeters(targetPosition);
-        //        vTaskDelay(1);
-        // if (currentStrokeMm > 1)
-        //        numberStrokes++;
-        //        sessionDistanceMeters += (0.002 * currentStrokeMm);
+        // TODO: update life states.
         //        updateLifeStats();
+        vTaskDelay(1);
     }
     vTaskDelete(nullptr);
 }
 
 void OSSM::startSimplePenetration() {
     xTaskCreatePinnedToCore(startSimplePenetrationTask,
-                            "startSimplePenetrationTask", 2048, this, 1,
-                            &operationTask, 0);
+                            "startSimplePenetrationTask", 2048, this,
+                            configMAX_PRIORITIES - 1, &operationTask, 0);
 }

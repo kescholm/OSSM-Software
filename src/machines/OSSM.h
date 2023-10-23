@@ -6,7 +6,6 @@
 #include "AiEsp32RotaryEncoder.h"
 #include "ESP_FlexyStepper.h"
 #include "Events.h"
-#include "Guards.h"
 #include "U8g2lib.h"
 #include "boost/sml.hpp"
 #include "constants/Menu.h"
@@ -89,7 +88,8 @@ class OSSM {
                 return [option](OSSM &o) { return o.menuOption == option; };
             };
 
-            using namespace sml;
+            static auto isDoubleClick = [](auto e) { return e.isDouble; };
+
             return make_transition_table(
                 // clang-format off
                 *"idle"_s + done / drawHello = "homing"_s,

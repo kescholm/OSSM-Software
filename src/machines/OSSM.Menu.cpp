@@ -100,5 +100,6 @@ void OSSM::drawMenu() {
     //        vTaskDelete(displayTask);
     //    }
     // start the draw menu task
-    xTaskCreate(drawMenuTask, "drawMenuTask", 2048, this, 1, &displayTask);
+    xTaskCreatePinnedToCore(drawMenuTask, "drawMenuTask", 2048, this, 1,
+                            &displayTask, 0);
 }
