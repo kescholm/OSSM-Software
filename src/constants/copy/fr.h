@@ -22,11 +22,15 @@ static const LanguageStruct fr = {
     .Settings = "Paramètres",
     .SimplePenetration = "Pénétration simple",
     .Skip = "Quitter ->",
+    .Speed = "Vitesse",
+    .SpeedWarning = "Réduisez la vitesse pour commencer à jouer.",
     .StateNotImplemented = "État: %u non implémenté.",
+    .Stroke = "Coup",
     .StrokeEngine = "Stroke Engine",
     .StrokeTooShort =
         "Course trop courte. Veuillez vérifier votre courroie d'entraînement.",
     .YouShouldNotBeHere = "Vous ne devriez pas être ici.",
+
 };
 
 #endif  // OSSM_SOFTWARE_FR_H

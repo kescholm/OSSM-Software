@@ -11,22 +11,22 @@ void OSSM::drawMenuTask(void *pvParameters) {
 
     int clicksPerRow = 3;
 
-    ossm->encoder.setBoundaries(0, clicksPerRow * (MenuOption::NUM_OPTIONS)-1,
-                                true);
+    ossm->encoder.setBoundaries(0, clicksPerRow * (Menu::NUM_OPTIONS)-1, true);
     ossm->encoder.setAcceleration(0);
 
-    ossm->menuOption =
-        (MenuOption)floor(ossm->encoder.readEncoder() / clicksPerRow);
+    ossm->menuOption = (Menu)floor(ossm->encoder.readEncoder() / clicksPerRow);
+
+    ossm->encoder.setAcceleration(0);
+    ossm->encoder.setEncoderValue(0);
 
     // get the encoder position
-    do {
-        // Destroy this task if, for some reason, the state is not as expected.
-        if (!isFirstDraw && !ossm->sm->is("menu"_s) &&
-            !ossm->sm->is("menu.idle"_s)) {
-            vTaskDelete(nullptr);
-            return;
-        }
 
+    auto isInCorrectState = [](OSSM *ossm) {
+        // Add any states that you want to support here.
+        return ossm->sm->is("menu"_s) || ossm->sm->is("menu.idle"_s);
+    };
+
+    while (isInCorrectState(ossm)) {
         if (!isFirstDraw && !ossm->encoder.encoderChanged()) {
             vTaskDelay(1);
             continue;
@@ -43,18 +43,18 @@ void OSSM::drawMenuTask(void *pvParameters) {
         int visibleItems = 3;  // Number of items visible on the screen
 
         auto menuOption =
-            (MenuOption)floor(ossm->encoder.readEncoder() / clicksPerRow);
+            (Menu)floor(ossm->encoder.readEncoder() / clicksPerRow);
         ossm->menuOption = menuOption;
 
         drawShape::scroll(100 * ossm->encoder.readEncoder() /
-                          (clicksPerRow * MenuOption::NUM_OPTIONS - 1));
+                          (clicksPerRow * Menu::NUM_OPTIONS - 1));
         LOG_TRACE("Hovering Over State: " + menuStrings[menuOption]);
 
         // Loop around to make an infinite menu.
         int lastIdx =
-            menuOption - 1 < 0 ? MenuOption::NUM_OPTIONS - 1 : menuOption - 1;
+            menuOption - 1 < 0 ? Menu::NUM_OPTIONS - 1 : menuOption - 1;
         int nextIdx =
-            menuOption + 1 > MenuOption::NUM_OPTIONS - 1 ? 0 : menuOption + 1;
+            menuOption + 1 > Menu::NUM_OPTIONS - 1 ? 0 : menuOption + 1;
 
         ossm->display.setFont(Config::Font::base);
 
@@ -65,7 +65,7 @@ void OSSM::drawMenuTask(void *pvParameters) {
         }
 
         // Draw the next item
-        if (nextIdx < MenuOption::NUM_OPTIONS) {
+        if (nextIdx < Menu::NUM_OPTIONS) {
             ossm->display.drawUTF8(leftPadding, itemHeight * (3),
                                    menuStrings[nextIdx].c_str());
         }
@@ -89,16 +89,17 @@ void OSSM::drawMenuTask(void *pvParameters) {
         ossm->display.sendBuffer();
 
         vTaskDelay(1);
-    } while (true);
+    };
 
     vTaskDelete(nullptr);
 }
 
 void OSSM::drawMenu() {
     // Use the handle to delete the task.
-    if (displayTask != nullptr) {
-        vTaskDelete(displayTask);
-    }
+    //    if (displayTask != nullptr) {
+    //        vTaskDelete(displayTask);
+    //    }
     // start the draw menu task
-    xTaskCreate(drawMenuTask, "drawMenuTask", 2048, this, 1, &displayTask);
+    xTaskCreatePinnedToCore(drawMenuTask, "drawMenuTask", 2048, this, 1,
+                            &displayTask, 0);
 }

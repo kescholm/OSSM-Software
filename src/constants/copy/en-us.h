@@ -12,7 +12,7 @@ static const LanguageStruct enUs = {
     .GetHelpLine2 = "or GitHub",
     .Homing = "Homing",
     .HomingTookTooLong =
-        "Homing took too long.\nPlease check your wiring and try again.",
+        "Homing took too long. Please check your wiring and try again.",
     .Idle = "Initializing",
     .MeasuringStroke = "Measuring Stroke",
     .NoInternalLoop = "No display handler implemented.",
@@ -20,10 +20,14 @@ static const LanguageStruct enUs = {
     .Settings = "Settings",
     .SimplePenetration = "Simple Penetration",
     .Skip = "Click to exit",
+    .Speed = "Speed",
+    .SpeedWarning = "Decrease the speed to begin playing.",
     .StateNotImplemented = "State: %u not implemented.",
+    .Stroke = "Stroke",
     .StrokeEngine = "Stroke Engine",
     .StrokeTooShort = "Stroke too short. Please check you drive belt.",
     .YouShouldNotBeHere = "You should not be here.",
+
 };
 
 #endif  // OSSM_SOFTWARE_EN_US_H

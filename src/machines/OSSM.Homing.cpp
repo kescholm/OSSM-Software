@@ -33,8 +33,8 @@ void OSSM::clearHoming() {
         SampleOnPin{Pins::Driver::currentSensorPin, 1000}));
 };
 
-void OSSM::homingTask(void *pvParameters) {
-    LOG_DEBUG("OSSM::homingTask :D");
+void OSSM::startHomingTask(void *pvParameters) {
+    LOG_TRACE("OSSM::startHomingTask :D");
     TickType_t xTaskStartTime = xTaskGetTickCount();
 
     // parse parameters to get OSSM reference
@@ -43,15 +43,13 @@ void OSSM::homingTask(void *pvParameters) {
     float target = ossm->isForward ? -400 : 400;
     ossm->stepper.setTargetPositionInMillimeters(target);
 
+    auto isInCorrectState = [](OSSM *ossm) {
+        // Add any states that you want to support here.
+        return ossm->sm->is("homing"_s) || ossm->sm->is("homing.idle"_s) ||
+               ossm->sm->is("homing.backward"_s);
+    };
     // run loop for 15second or until loop exits
-    do {
-        // Destroy this task if, for some reason, the state is not as expected.
-        if (!ossm->sm->is("homing"_s) && !ossm->sm->is("homing.idle"_s) &&
-            !ossm->sm->is("homing.backward"_s)) {
-            vTaskDelete(nullptr);
-            return;
-        }
-
+    while (isInCorrectState(ossm)) {
         TickType_t xCurrentTickCount = xTaskGetTickCount();
         // Calculate the time in ticks that the task has been running.
         TickType_t xTicksPassed = xCurrentTickCount - xTaskStartTime;
@@ -80,7 +78,7 @@ void OSSM::homingTask(void *pvParameters) {
         // let the loop continue.
         if (current < Config::Driver::sensorlessCurrentLimit &&
             ossm->stepper.getCurrentPositionInMillimeters() <
-                2 * Config::Driver::maxStrokeLengthMm) {
+                Config::Driver::maxStrokeLengthMm) {
             // Saying hi to the watchdog :).
             vTaskDelay(1);
             continue;
@@ -119,14 +117,15 @@ void OSSM::homingTask(void *pvParameters) {
         // state.
         ossm->sm->process_event(Done{});
         break;
-    } while (true);
+    };
 
     vTaskDelete(nullptr);
 }
 
-void OSSM::homing() {
+void OSSM::startHoming() {
     // Create task
-    xTaskCreate(homingTask, "homingTask", 10000, this, 1, &operationTask);
+    xTaskCreatePinnedToCore(startHomingTask, "startHomingTask", 10000, this, 1,
+                            &operationTask, 0);
 }
 
 auto OSSM::isStrokeTooShort() -> bool {

@@ -1,7 +1,7 @@
 #ifndef OSSM_SOFTWARE_STATELOGGER_H
 #define OSSM_SOFTWARE_STATELOGGER_H
 
-#include <WString.h>
+#include <Arduino.h>
 
 #include <cassert>
 
@@ -45,7 +45,7 @@ struct StateLogger {
 
     template <class SM, class TGuard, class TEvent>
     [[gnu::used]] void log_guard(const TGuard&, const TEvent&, bool result) {
-        String resultString = result ? "[FAIL]" : "[OK]";
+        String resultString = result ? "[PASS]" : "[DO NOT PASS]";
         LOG_TRACE(resultString + ": " + String(sml::aux::get_type_name<SM>()));
         LOG_DEBUG(resultString + ": " +
                   String(sml::aux::get_type_name<TGuard>()) + ", " +

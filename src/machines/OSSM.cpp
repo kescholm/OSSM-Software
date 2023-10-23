@@ -52,7 +52,7 @@ void OSSM::drawHelloTask(void *pvParameters) {
     std::array heights = {0, 0, 0, 0};
     int letterSpacing = 20;
 
-    do {
+    while (frameIdx < nFrames + 9) {
         if (frameIdx < nFrames) {
             heights[0] = framesY[frameIdx] - offsetY;
         }
@@ -77,7 +77,7 @@ void OSSM::drawHelloTask(void *pvParameters) {
         ossm->display.sendBuffer();
         // Saying hi to the watchdog :).
         vTaskDelay(1);
-    } while (frameIdx < nFrames + 9);
+    };
 
     // Delay for a second, then show the RDLogo.
     vTaskDelay(1500);
@@ -106,16 +106,21 @@ void OSSM::drawHelloTask(void *pvParameters) {
 
 void OSSM::drawHello() {
     // Use the handle to delete the task.
-    if (displayTask != nullptr) {
-        vTaskDelete(displayTask);
-    }
+    //    if (displayTask != nullptr) {
+    //        vTaskDelete(displayTask);
+    //    }
     // Create a task to draw the hello world screen.
-    xTaskCreate(drawHelloTask, "drawHello", 10000, this, 1, &displayTask);
+    xTaskCreatePinnedToCore(drawHelloTask, "drawHello", 10000, this, 1,
+                            &displayTask, 0);
 }
 
-void OSSM::emergencyStop() {
+void OSSM::drawError() {
     // Throw the e-break on the stepper
-    stepper.emergencyStop();
+    try {
+        stepper.emergencyStop();
+    } catch (const std::exception &e) {
+        LOG_ERROR("OSSM::drawError: " + String(e.what()));
+    }
 
     display.clearBuffer();
     drawStr::title(UserConfig::language.Error);

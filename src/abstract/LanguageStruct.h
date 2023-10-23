@@ -16,7 +16,10 @@ struct LanguageStruct {
     String Settings;
     String SimplePenetration;
     String Skip;
+    String Speed;
+    String SpeedWarning;
     String StateNotImplemented;
+    String Stroke;
     String StrokeEngine;
     String StrokeTooShort;
     String YouShouldNotBeHere;

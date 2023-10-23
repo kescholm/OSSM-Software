@@ -52,9 +52,9 @@ namespace Pins {
     }
 
     namespace Wifi {
-        // Pin for WiFi reset button (optional)
+        // Pin for Wi-Fi reset button (optional)
         constexpr int resetPin = 23;
-        // Pin for the toggle for wifi control (Can be target alone if no
+        // Pin for the toggle for Wi-Fi control (Can be targeted alone if no
         // hardware toggle is required)
         constexpr int controlTogglePin = 22;
 
