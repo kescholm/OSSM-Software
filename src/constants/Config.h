@@ -9,10 +9,6 @@
 */
 namespace Config {
 
-    namespace Limits {
-        constexpr float currentLimit = 1.5;
-    }
-
     /**
             Motion System Config
     */

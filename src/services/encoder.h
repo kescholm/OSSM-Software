@@ -16,7 +16,6 @@ static void initEncoder() {
     encoder.setup(readEncoderISR);
     // set boundaries and if values should cycle or not
     // in this example we will set possible values between 0 and 1000;
-    bool circleValues = false;
     encoder.setBoundaries(
         0, 99, false);  // minValue, maxValue, circleValues true|false (when max
                         // go to min and vice versa)

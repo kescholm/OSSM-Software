@@ -9,9 +9,9 @@ void OSSM::drawPlayControlsTask(void *pvParameters) {
     // parse ossm from the parameters
     OSSM *ossm = (OSSM *)pvParameters;
     auto menuString = menuStrings[ossm->menuOption];
-    float speedPercentage = 0;
-    long strokePercentage = 0;
-    int currentTime = 0;
+    float speedPercentage;
+    long strokePercentage;
+    int currentTime;
 
     ossm->speedPercentage = 0;
     ossm->strokePercentage = 0;
